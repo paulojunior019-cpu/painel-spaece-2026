@@ -84,7 +84,16 @@ table{min-width:760px}
 .scan-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.scan-label{display:inline-flex;align-items:center;justify-content:center}.scan-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.scan-thumb{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.scan-thumb img{width:100%;aspect-ratio:595/842;object-fit:cover;border-radius:8px}.scan-thumb .scan-name{font-size:12px;font-weight:700;margin-top:7px;word-break:break-word}.scan-results{display:grid;gap:12px;margin-top:18px}.scan-result{border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:15px}.scan-result.ok{border-color:#7bb88a}.scan-result.warn{border-color:#d7b66a}.scan-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.scan-answer-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin-top:12px}.scan-answer{border:1px solid var(--line);border-radius:7px;text-align:center;padding:5px 2px;font-size:11px;background:#fff}.scan-answer.ok{background:#e8f5eb;border-color:#75ae80}.scan-answer.bad{background:#fff0ef;border-color:#d38b85}.scan-answer.amb{background:#fff5d8;border-color:#d6b35b}.scan-answer.blank{background:#f3f3f3}.scan-meter{height:8px;background:#eee;border-radius:9px;overflow:hidden;margin-top:7px}.scan-meter span{display:block;height:100%;background:var(--gold)}
 @media(max-width:800px){.scan-list{grid-template-columns:1fr 1fr}.scan-answer-grid{grid-template-columns:repeat(8,1fr)}}
 @media(max-width:500px){.scan-list{grid-template-columns:1fr}.scan-answer-grid{grid-template-columns:repeat(6,1fr)}}
-<style>.btn.danger{border-color:#c9827a;color:#9b3328;background:#fff5f3}.btn.danger:hover{background:#fde9e6}</style></head>
+<style>.btn.danger{border-color:#c9827a;color:#9b3328;background:#fff5f3}.btn.danger:hover{background:#fde9e6}</style><style>
+/* V8 — resultados individuais */
+#student-detail .question-grid{grid-template-columns:repeat(13,minmax(58px,1fr));overflow:auto}
+#student-detail .qcell.pending{background:#fff7df;border-color:#d7b66a}
+#student-detail .qcell{min-width:58px}
+.results-focus{margin:10px 0}
+@media(max-width:900px){#student-detail .question-grid{grid-template-columns:repeat(8,minmax(62px,1fr))}}
+@media(max-width:600px){#student-detail .question-grid{grid-template-columns:repeat(4,minmax(68px,1fr))}}
+</style>
+</head>
 
 <style>
 /* Ajuste de encaixe para notebooks em 100% de zoom */
@@ -189,7 +198,8 @@ table{min-width:760px}
 
   <div id="view-resultados" class="view">
     <div class="top"><div><div class="eyebrow">Análise</div><div class="title">Resultados</div><p class="subtitle">Resultados corrigidos quando houver gabarito cadastrado.</p></div></div>
-    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="res-class" class="select" onchange="renderResults()"><option value="">Todas</option></select></div><div class="field"><label>Disciplina</label><select id="res-subject" class="select" onchange="renderResults()"><option value="">Todas</option><option>Matemática</option><option>Português</option></select></div><div class="field"><label>Simulado</label><select id="res-test" class="select" onchange="renderResults()"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>
+    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="res-class" class="select" onchange="renderResults()"><option value="">Todas</option></select></div><div class="field"><label>Aluno</label><select id="res-student" class="select" onchange="renderResults()"><option value="">Todos os alunos</option></select></div><div class="field"><label>Disciplina</label><select id="res-subject" class="select" onchange="renderResults()"><option value="">Todas</option><option>Matemática</option><option>Português</option></select></div><div class="field"><label>Simulado</label><select id="res-test" class="select" onchange="renderResults()"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>
+<div class="notice" style="margin-bottom:0"><b>Consulta individual:</b> escolha um aluno para ver rapidamente onde ele acertou, errou ou deixou em branco. Clique em <b>Ver detalhes</b>.</div>
 <section id="page-dashboard" class="page">
 <div class="page-head"><div><h1>Dashboard de Gestão</h1><p class="muted">Visão geral do desempenho do Simulado 1.</p></div></div>
 <div class="kpi-grid">
@@ -208,7 +218,8 @@ table{min-width:760px}
 </div>
 </section>
 <div id="results-table"></div>
-<div id="student-detail" class="student-detail"></div></div>
+<div id="student-detail" class="student-detail"></div>
+<div class="muted" style="margin-top:10px">Dica: use “Ver detalhes” para conferir as 52 respostas do aluno, uma por uma.</div></div>
   </div>
 
   <div id="view-evolucao" class="view">
@@ -277,7 +288,13 @@ function showView(v){document.querySelectorAll(".view").forEach(x=>x.classList.r
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showView(b.dataset.view));
 function populateSelects(){
  const opts=classes.map(c=>`<option value="${c}">3ª ${c}</option>`).join("");
- ["student-class-filter","res-class"].forEach(id=>{const el=document.getElementById(id);if(el){const first=el.options[0].outerHTML;el.innerHTML=first+opts}});
+ ["student-class-filter","res-class"].forEach(id=>{const el=document.getElementById(id);if(el){const current=el.value;const first=el.options[0].outerHTML;el.innerHTML=first+opts;el.value=current}});
+ const rs=document.getElementById("res-student");
+ if(rs){
+   const current=rs.value;
+   rs.innerHTML='<option value="">Todos os alunos</option>'+state.students.filter(s=>s.ativo!==false).sort((a,b)=>a.nome_aluno.localeCompare(b.nome_aluno,'pt-BR')).map(s=>`<option value="${esc(s.aluno_id)}">${esc(s.nome_aluno)} · 3ª ${esc(s.turma)}</option>`).join("");
+   rs.value=current;
+ }
  document.getElementById("launch-class").innerHTML=opts;
  populateLaunchStudents();
 }
@@ -308,31 +325,47 @@ function renderTests(){document.getElementById("tests-grid").innerHTML=[1,2,3].m
 function openItemsFor(n){showView("itens");document.getElementById("item-test").value=n;renderItems()}
 function renderResults(){
  const c=document.getElementById("res-class").value, test=document.getElementById("res-test").value;
+ const studentId=document.getElementById("res-student")?.value||"";
  const rows=[];
  state.responses.forEach(r=>{
    const s=findStudent(r.Aluno,r.Matrícula), cr=calcRecord(r); if(!s||!cr)return;
    const sim=String(r.Simulado).replace(/\D/g,"")||"1";
-   if(c&&s.turma!==c||test&&sim!==test)return;
-   rows.push({s,r,cr});
+   if(c&&s.turma!==c||test&&sim!==test||studentId&&String(s.aluno_id)!==String(studentId))return;
+   rows.push({s,r,cr,sim});
  });
- document.getElementById("results-table").innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Total</th><th>Geral</th><th>Fácil</th><th>Médio</th><th>Difícil</th><th>Ação</th></tr></thead><tbody>${rows.sort((a,b)=>b.cr.percent-a.cr.percent).map(x=>{
-   const dif=["Fácil","Médio","Difícil"].map(d=>{let co=0,to=0;["math","port"].forEach(k=>{co+=x.cr[k].byDiff[d].correct;to+=x.cr[k].byDiff[d].total});return to?`${co}/${to}`:"—"});
-   return `<tr><td><b>${esc(x.s.nome_aluno)}</b></td><td>3ª ${x.s.turma}</td><td>${esc(x.r.Simulado)}</td><td>${x.cr.math.correct}/26</td><td>${x.cr.port.correct}/26</td><td><b>${x.cr.correct}/52</b></td><td><b>${pct(x.cr.percent)}</b></td><td>${dif[0]}</td><td>${dif[1]}</td><td>${dif[2]}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small" onclick="showStudentDetail('${x.s.aluno_id}','${sim}')">Ver</button><button class="btn small danger" onclick="deleteResponse('${x.s.aluno_id}','${sim}')">Apagar</button></div></td></tr>`
- }).join("")}</tbody></table></div>`:`<div class="empty">Nenhum resultado corrigido.</div>`;
+ const total=rows.length;
+ document.getElementById("results-table").innerHTML=total?`
+ <div class="muted" style="margin:8px 0 10px">${total} resultado(s) encontrado(s)</div>
+ <div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Total</th><th>Geral</th><th>Ação</th></tr></thead><tbody>
+ ${rows.sort((a,b)=>b.cr.percent-a.cr.percent).map(x=>{
+   return `<tr>
+    <td><b>${esc(x.s.nome_aluno)}</b><div class="muted">Matrícula ${esc(x.s.aluno_id)}</div></td>
+    <td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td>
+    <td>${x.cr.math.correct}/26<br><span class="muted">${pct(x.cr.math.percent)}</span></td>
+    <td>${x.cr.port.correct}/26<br><span class="muted">${pct(x.cr.port.percent)}</span></td>
+    <td><b>${x.cr.correct}/52</b><br><span class="muted">${x.cr.blank} em branco</span></td>
+    <td><b>${pct(x.cr.percent)}</b></td>
+    <td><div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn small primary" onclick="showStudentDetail('${x.s.aluno_id}','${x.sim}')">Ver detalhes</button>
+      <button class="btn small danger" onclick="deleteResponse('${x.s.aluno_id}','${x.sim}')">Apagar</button>
+    </div></td>
+   </tr>`;
+ }).join("")}</tbody></table></div>`:`<div class="empty">Nenhum resultado corrigido para os filtros selecionados.</div>`;
 }
 function deleteResponse(studentId, simulado){
  const s=state.students.find(x=>String(x.aluno_id)===String(studentId));
  if(!s)return;
  const sim="Simulado "+String(simulado);
- const idx=state.responses.findIndex(r=>String(r.Matrícula)===String(studentId)&&String(r.Simulado)===sim);
- if(idx<0){toast("Lançamento não encontrado");return}
- const ok=confirm(`Apagar o lançamento de ${s.nome_aluno} — ${sim}?\n\nAs 52 respostas serão removidas deste navegador. Esta ação não pode ser desfeita.`);
+ const before=state.responses.length;
+ const matches=state.responses.filter(r=>String(r.Matrícula)===String(studentId)&&String(r.Simulado)===sim);
+ if(!matches.length){toast("Lançamento não encontrado");return}
+ const ok=confirm(`Apagar o lançamento de ${s.nome_aluno} — ${sim}?\n\nTodas as respostas desse aluno nesse simulado serão removidas deste navegador. Esta ação não pode ser desfeita.`);
  if(!ok)return;
- state.responses.splice(idx,1);
+ state.responses=state.responses.filter(r=>!(String(r.Matrícula)===String(studentId)&&String(r.Simulado)===sim));
  persist();
  const detail=document.getElementById("student-detail");
  if(detail)detail.classList.remove("open");
- toast("Lançamento apagado");
+ toast(`${before-state.responses.length} lançamento(s) apagado(s)`);
  renderAll();
 }
 function renderEvolution(){
@@ -383,26 +416,37 @@ function showStudentDetail(studentId,simulado){
  const box=document.getElementById("student-detail");
  if(!rec){box.innerHTML='<div class="card">Não há lançamento para este aluno.</div>';box.classList.add("open");return}
  const ans=answersOf(rec), cr=calcRecord(rec);
- const cells=ans.map((a,i)=>{
-   const q=i+1,k=getKey(simulado,q), cls=!a?"blank":(a===k?"ok":"bad");
-   const sub=q<=26?"MAT":"PORT";
-   return `<div class="qcell ${cls}"><div class="qnum">${sub} Q${String(q).padStart(2,"0")}</div><div class="qans">${a||"—"}</div><div class="qkey">Gabarito: ${k||"—"}</div></div>`
+ const makeCells=(from,to)=>ans.slice(from,to).map((a,idx)=>{
+   const q=from+idx+1,k=getKey(simulado,q);
+   const status=!a?"blank":(k&&a===k?"ok":k?"bad":"pending");
+   const label=!a?"Em branco":(k?(a===k?"Acerto":"Erro"):"Sem gabarito");
+   return `<div class="qcell ${status}" title="Q${String(q).padStart(2,"0")} · Marcada: ${a||"—"} · Gabarito: ${k||"—"}">
+     <div class="qnum">Q${String(q).padStart(2,"0")}</div>
+     <div class="qans">${a||"—"}</div>
+     <div class="qkey">Gabarito: ${k||"—"}</div>
+     <div style="font-size:10px;font-weight:800;margin-top:3px">${label}</div>
+   </div>`;
  }).join("");
  box.innerHTML=`<div class="card">
-   <div class="detail-head"><div><div class="detail-title">${esc(s.nome_aluno)}</div><div class="muted">3ª ${s.turma} · Simulado ${simulado}</div></div><button class="btn" onclick="document.getElementById('student-detail').classList.remove('open')">Fechar</button></div>
+   <div class="detail-head">
+     <div><div class="detail-title">${esc(s.nome_aluno)}</div><div class="muted">Matrícula ${esc(s.aluno_id)} · 3ª ${esc(s.turma)} · Simulado ${simulado}</div></div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn danger" onclick="deleteResponse('${s.aluno_id}','${simulado}')">Apagar lançamento</button><button class="btn" onclick="document.getElementById('student-detail').classList.remove('open')">Fechar</button></div>
+   </div>
    <div class="detail-grid">
     <div class="detail-stat"><div class="muted">Geral</div><div class="v">${cr.correct}/52</div><div>${pct(cr.percent)}</div></div>
     <div class="detail-stat"><div class="muted">Matemática</div><div class="v">${cr.math.correct}/26</div><div>${pct(cr.math.percent)}</div></div>
     <div class="detail-stat"><div class="muted">Português</div><div class="v">${cr.port.correct}/26</div><div>${pct(cr.port.percent)}</div></div>
     <div class="detail-stat"><div class="muted">Em branco</div><div class="v">${cr.blank}</div><div>questões</div></div>
    </div>
-   <h3>Questões — verde = acerto · vermelho = erro · cinza = em branco</h3>
-   <div class="question-grid">${cells}</div>
+   <div class="notice" style="margin-bottom:14px"><b>Legenda:</b> verde = acerto · vermelho = erro · cinza = em branco · amarelo = sem gabarito. Em cada questão aparecem a resposta marcada e o gabarito.</div>
+   <h3 style="margin-bottom:8px">Matemática — 26 questões</h3>
+   <div class="question-grid">${makeCells(0,26)}</div>
+   <h3 style="margin:18px 0 8px">Português — 26 questões</h3>
+   <div class="question-grid">${makeCells(26,52)}</div>
  </div>`;
  box.classList.add("open");
  box.scrollIntoView({behavior:"smooth",block:"start"});
 }
-
 function renderDashboard(){
  const active=state.students.filter(s=>s.ativo!==false);
  const results=state.responses.map(r=>({r,s:findStudent(r.Aluno,r.Matrícula),c:calcRecord(r)})).filter(x=>x.s&&x.c);
@@ -708,11 +752,31 @@ function applyScanReview(i){
 function saveScannedResult(i){
   const r=window.lastScanResults[i],s=r.name.match?.s||selectedStudentForItem(r.item);
   if(!s){reviewScan(i);return}
-  const rec={Matrícula:s.aluno_id,Aluno:s.nome_aluno,Turma:s.turma,Simulado:'Simulado 1'};
-  r.answers.forEach(a=>rec['Q'+String(a.q).padStart(2,'0')]=a.answer==='?'?'':a.answer);
-  state.responses=state.responses.filter(x=>!(String(x.Matrícula)===String(s.aluno_id)&&String(x.Simulado)==='Simulado 1'));
-  state.responses.push(rec);persist();toast(`Resultado de ${s.nome_aluno} salvo automaticamente`);
-  r.item.status='salvo';renderScanResults(window.lastScanResults);
+  const simulado="Simulado 1";
+  const rec={Matrícula:String(s.aluno_id),Aluno:s.nome_aluno,Turma:s.turma,Simulado:simulado,Fonte:"Correção automática por imagem",Data: new Date().toISOString()};
+  for(let q=1;q<=52;q++){
+    const a=r.answers.find(x=>Number(x.q)===q);
+    rec['Q'+String(q).padStart(2,'0')]=a&&a.answer!=="?"?a.answer:"";
+  }
+  state.responses=state.responses.filter(x=>!(String(x.Matrícula)===String(s.aluno_id)&&String(x.Simulado)===simulado));
+  state.responses.push(rec);
+  persist();
+  r.item.status='salvo';
+  renderScanResults(window.lastScanResults);
+  toast(`Resultado de ${s.nome_aluno} salvo em Resultados`);
+  setTimeout(()=>{
+    const sel=document.getElementById("res-student");
+    const tst=document.getElementById("res-test");
+    if(sel)sel.value=String(s.aluno_id);
+    if(tst)tst.value="1";
+    showView("resultados");
+    const sel2=document.getElementById("res-student");
+    const tst2=document.getElementById("res-test");
+    if(sel2)sel2.value=String(s.aluno_id);
+    if(tst2)tst2.value="1";
+    renderResults();
+    showStudentDetail(s.aluno_id,"1");
+  },150);
 }
 async function processScanQueue(){
   const btn=document.getElementById('scan-process');btn.disabled=true;
