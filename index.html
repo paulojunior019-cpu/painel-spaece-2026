@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PAINEL SPAECE 2026</title>
+<style>
+:root{--green:#0c3525;--green2:#174b31;--deep:#062518;--gold:#d8a41d;--cream:#f6f3e9;--paper:#fffefa;--line:#ded7c4;--ink:#193428;--muted:#68766d;--red:#a33b32;--blue:#2d5b8a}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--cream);color:var(--ink)}
+button,input,select{font:inherit}.app{min-height:100vh;display:flex}.side{width:245px;background:linear-gradient(160deg,var(--deep),var(--green) 60%,#1d573b);color:#fff;padding:22px 14px;position:sticky;top:0;height:100vh}.brand{padding:10px 12px 22px;border-bottom:1px solid #ffffff22}.brand h1{font-size:20px;margin:0 0 5px}.brand p{font-size:12px;color:#c7d7cd;margin:0}.nav{margin-top:18px}.nav button{width:100%;border:0;background:none;color:#c9dacd;text-align:left;padding:11px 13px;border-radius:10px;margin:3px 0;cursor:pointer}.nav button:hover,.nav button.active{background:#d8a41d1e;color:#fff}.main{flex:1;padding:28px;min-width:0}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:.13em;color:#866000;text-transform:uppercase}.title{font-size:30px;margin:5px 0 0;color:var(--green)}.subtitle{color:var(--muted);margin:7px 0 0}.btn{border:1px solid #cdbd8c;background:var(--paper);color:var(--green);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.btn.primary{background:var(--green);border-color:var(--green);color:#fff}.btn.danger{background:#fff1ef;border-color:#e1b7b1;color:var(--red)}.btn:hover{filter:brightness(.98);transform:translateY(-1px)}
+.grid{display:grid;gap:14px}.metrics{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 6px 22px #2038260c}.metric-label{font-size:12px;color:var(--muted)}.metric{font-size:30px;font-weight:800;color:var(--green);margin-top:5px}.section{margin-top:18px}.section h2{font-size:18px;margin:0 0 12px;color:var(--green)}.filters{grid-template-columns:repeat(4,minmax(0,1fr));align-items:end}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.input,.select{width:100%;padding:10px 11px;border:1px solid #cec7b3;border-radius:10px;background:#fff;color:var(--ink);outline:none}.input:focus,.select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #d8a41d22}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--paper)}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:11px 12px;text-align:left;border-bottom:1px solid #ece6d7;font-size:13px}th{background:#f5efdc;color:#516256;font-size:11px;text-transform:uppercase;letter-spacing:.06em}tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#f8efd1;color:#7a5700;font-size:11px;font-weight:700}.pill.ok{background:#e5f2e9;color:#22613c}.pill.pending{background:#fff0d4;color:#866000}.empty{text-align:center;padding:35px;color:var(--muted)}
+.view{display:none}.view.active{display:block}.class-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.class-card{cursor:pointer}.class-card h3{margin:0;color:var(--green)}.class-number{font-size:30px;font-weight:800;margin:8px 0}.bar{height:8px;background:#ebe5d5;border-radius:99px;overflow:hidden}.bar>span{display:block;height:100%;background:var(--gold);border-radius:99px}.ranking{display:grid;gap:8px}.rank-row{display:flex;gap:12px;align-items:center;padding:11px;background:#faf8f1;border-radius:12px}.rank-no{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#e8e3d5;font-size:12px;font-weight:800}.rank-no.first{background:var(--gold)}.rank-name{flex:1;min-width:0}.muted{color:var(--muted);font-size:12px}.right{text-align:right}.answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.q{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}.qhead{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}.opts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.opt{padding:8px 3px;border:1px solid #d8d0bc;background:#fffefa;border-radius:8px;cursor:pointer;font-weight:800;font-size:12px}.opt.sel{background:var(--green);border-color:var(--green);color:#fff}.opt.nr.sel{background:#866000;border-color:#866000}.modal{position:fixed;inset:0;background:#041a10b3;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.open{display:flex}.modal-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:var(--paper);border-radius:18px;padding:20px;border:1px solid var(--line)}.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:16px}.modal-head h2{margin:0;color:var(--green)}.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.notice{padding:12px 14px;border-radius:11px;background:#fff7df;border:1px solid #ead6a0;color:#735500;font-size:13px}.toast{position:fixed;right:18px;bottom:18px;background:var(--green);color:#fff;padding:12px 15px;border-radius:11px;display:none;z-index:20}.toast.show{display:block}.mobile-menu{display:none}
+@media(max-width:900px){.side{width:205px}.metrics{grid-template-columns:repeat(2,1fr)}.filters,.form-grid{grid-template-columns:1fr 1fr}.class-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.app{display:block}.side{position:static;width:100%;height:auto;padding:12px}.brand{padding:6px 8px 12px}.nav{display:flex;overflow:auto;margin-top:8px}.nav button{white-space:nowrap;width:auto}.main{padding:16px}.top{display:block}.top .btn{margin-top:12px}.metrics,.filters,.form-grid,.class-grid{grid-template-columns:1fr}.answer-grid{grid-template-columns:1fr}.opts{grid-template-columns:repeat(3,1fr)}}
+
+.student-detail{display:none;margin-top:18px}
+.student-detail.open{display:block}
+.detail-head{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.detail-title{font-size:22px;font-weight:800}
+.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+.detail-stat{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.detail-stat .v{font-size:24px;font-weight:800;margin-top:5px}
+.question-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.qcell{border:1px solid var(--line);border-radius:10px;padding:9px;text-align:center;background:#fff}
+.qcell.ok{border-color:#58a86a;background:#effaf1}
+.qcell.bad{border-color:#d96b6b;background:#fff1f1}
+.qcell.blank{border-color:#c9c9c9;background:#f5f5f5}
+.qnum{font-size:11px;color:#777}.qans{font-size:16px;font-weight:800;margin:2px 0}.qkey{font-size:10px;color:#666}
+.bar2{height:10px;border-radius:10px;background:#eee;overflow:hidden}.bar2 span{display:block;height:100%}
+@media(max-width:800px){.detail-grid{grid-template-columns:repeat(2,1fr)}.question-grid{grid-template-columns:repeat(4,1fr)}}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi-card{padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.kpi-card .label{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.04em}
+.kpi-card .value{font-size:28px;font-weight:850;margin-top:6px}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mini-row{display:grid;grid-template-columns:70px 1fr 60px;gap:10px;align-items:center;margin:10px 0}
+.mini-bar{height:10px;background:#eee;border-radius:8px;overflow:hidden}.mini-bar span{display:block;height:100%}
+@media(max-width:800px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.analysis-grid{grid-template-columns:1fr}}
+
+/* V5 — mobile/web */
+*{box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{min-width:0;overflow-x:hidden}
+button,input,select,textarea{font:inherit}
+button{touch-action:manipulation}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:760px}
+@media(max-width:700px){
+  body{padding-bottom:72px}
+  .sidebar{width:100%;position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:100;border-right:0;border-top:1px solid var(--line);padding:6px;display:flex;overflow-x:auto;background:#fff}
+  .sidebar .nav-btn{flex:0 0 auto;padding:10px 12px;font-size:11px}
+  .main{margin-left:0!important;padding:14px}
+  .page-head{display:block}
+  .page-head h1{font-size:24px}
+  .grid{grid-template-columns:1fr!important}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .analysis-grid{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr 1fr}
+  .question-grid{grid-template-columns:repeat(4,1fr)}
+  .card{padding:14px}
+  .btn{min-height:42px}
+  input,select{min-height:42px}
+}
+@media(max-width:430px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .detail-grid{grid-template-columns:1fr 1fr}
+  .question-grid{grid-template-columns:repeat(3,1fr)}
+  .page-head h1{font-size:21px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><h1>PAINEL SPAECE 2026</h1><p>3ª série · Ensino Médio</p></div>
+  <nav class="nav">
+    <button class="active" data-view="home">Início</button>
+    <button data-view="turmas">Turmas</button>
+    <button data-view="alunos">Alunos</button>
+    <button data-view="simulados">Simulados</button>
+    <button data-view="lancar">Lançar resultado</button>
+    <button data-view="resultados">Resultados</button>
+    <button data-view="evolucao">Evolução</button>
+    <button data-view="ranking">Ranking</button>
+    <button data-view="itens">Banco de itens</button>
+  </nav>
+</aside>
+<main class="main">
+  <div id="view-home" class="view active">
+    <div class="top"><div><div class="eyebrow">Dashboard</div><div class="title">Desempenho SPAECE 2026</div><p class="subtitle">Sistema local funcional para alunos, respostas, resultados e evolução.</p></div><button class="btn primary" onclick="openLaunch()">+ Lançar resultado</button></div>
+    <div class="grid metrics">
+      <div class="card"><div class="metric-label">Alunos cadastrados</div><div class="metric" id="m-students">0</div></div>
+      <div class="card"><div class="metric-label">Respostas armazenadas</div><div class="metric" id="m-answers">0</div></div>
+      <div class="card"><div class="metric-label">Resultados calculados</div><div class="metric" id="m-results">0</div></div>
+      <div class="card"><div class="metric-label">Média geral</div><div class="metric" id="m-average">—</div></div>
+    </div>
+    <div class="card section"><h2>Resumo das turmas</h2><div id="home-classes" class="grid class-grid"></div></div>
+    <div class="grid" style="grid-template-columns:1.2fr .8fr;margin-top:18px">
+      <div class="card"><h2>Últimos resultados</h2><div id="home-results"></div></div>
+      <div class="card"><h2>Estado da TRI</h2><div class="notice">A matriz de respostas está estruturada. A TRI não será inventada: os parâmetros dos itens deverão ser calibrados posteriormente.</div><p class="muted" style="margin-top:12px">Fácil/Médio/Difícil é classificação pedagógica, não é o parâmetro <b>b</b> da TRI.</p></div>
+    </div>
+  </div>
+
+  <div id="view-turmas" class="view">
+    <div class="top"><div><div class="eyebrow">Gestão</div><div class="title">Turmas</div><p class="subtitle">3ª A até 3ª F.</p></div></div>
+    <div id="class-grid" class="grid class-grid"></div>
+  </div>
+
+  <div id="view-alunos" class="view">
+    <div class="top"><div><div class="eyebrow">Cadastro</div><div class="title">Alunos</div><p class="subtitle">Lista dos alunos atualmente cadastrados.</p></div><button class="btn primary" onclick="openStudent()">+ Novo aluno</button></div>
+    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="student-class-filter" class="select" onchange="renderStudents()"><option value="">Todas</option></select></div><div class="field"><label>Pesquisar</label><input id="student-search" class="input" oninput="renderStudents()" placeholder="Nome ou matrícula"></div></div><div id="students-table"></div></div>
+  </div>
+
+  <div id="view-simulados" class="view">
+    <div class="top"><div><div class="eyebrow">Avaliações</div><div class="title">Simulados</div><p class="subtitle">Estrutura para três aplicações, com 52 questões por simulado.</p></div></div>
+    <div id="tests-grid" class="grid class-grid"></div>
+  </div>
+
+  <div id="view-lancar" class="view">
+    <div class="top"><div><div class="eyebrow">Lançamento</div><div class="title">Lançar resultado</div><p class="subtitle">Selecione o aluno e registre as 52 respostas.</p></div></div>
+    <div class="card"><div class="form-grid">
+      <div class="field"><label>Turma</label><select id="launch-class" class="select" onchange="populateLaunchStudents()"></select></div>
+      <div class="field"><label>Aluno</label><select id="launch-student" class="select"></select></div>
+      <div class="field"><label>Simulado</label><select id="launch-test" class="select"><option value="1">Simulado 1</option><option value="2">Simulado 2</option><option value="3">Simulado 3</option></select></div>
+    </div><div class="notice" style="margin:14px 0">O Simulado 1 possui um gabarito de trabalho e os resultados serão corrigidos automaticamente. Os gabaritos dos Simulados 2 e 3 podem ser cadastrados no Banco de Itens.</div><div id="answer-grid" class="answer-grid"></div><div class="form-actions"><button class="btn" onclick="clearDraft()">Limpar</button><button class="btn primary" onclick="saveLaunch()">Salvar respostas</button></div></div>
+  </div>
+
+  <div id="view-resultados" class="view">
+    <div class="top"><div><div class="eyebrow">Análise</div><div class="title">Resultados</div><p class="subtitle">Resultados corrigidos quando houver gabarito cadastrado.</p></div></div>
+    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="res-class" class="select" onchange="renderResults()"><option value="">Todas</option></select></div><div class="field"><label>Disciplina</label><select id="res-subject" class="select" onchange="renderResults()"><option value="">Todas</option><option>Matemática</option><option>Português</option></select></div><div class="field"><label>Simulado</label><select id="res-test" class="select" onchange="renderResults()"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>
+<section id="page-dashboard" class="page">
+<div class="page-head"><div><h1>Dashboard de Gestão</h1><p class="muted">Visão geral do desempenho do Simulado 1.</p></div></div>
+<div class="kpi-grid">
+<div class="kpi-card"><div class="label">Alunos cadastrados</div><div class="value" id="dash-students">—</div></div>
+<div class="kpi-card"><div class="label">Resultados corrigidos</div><div class="value" id="dash-results">—</div></div>
+<div class="kpi-card"><div class="label">Média geral</div><div class="value" id="dash-average">—</div></div>
+<div class="kpi-card"><div class="label">Acertos médios</div><div class="value" id="dash-correct">—</div></div>
+</div>
+<div class="analysis-grid" style="margin-top:16px">
+<div class="card"><h2>Desempenho por turma</h2><div id="dash-classes"></div></div>
+<div class="card"><h2>Desempenho por disciplina</h2><div id="dash-subjects"></div></div>
+</div>
+<div class="analysis-grid" style="margin-top:16px">
+<div class="card"><h2>Questões com menor desempenho</h2><div id="dash-items"></div></div>
+<div class="card"><h2>Desempenho por dificuldade</h2><div id="dash-difficulty"></div></div>
+</div>
+</section>
+<div id="results-table"></div>
+<div id="student-detail" class="student-detail"></div></div>
+  </div>
+
+  <div id="view-evolucao" class="view">
+    <div class="top"><div><div class="eyebrow">Acompanhamento</div><div class="title">Evolução</div><p class="subtitle">Comparação entre os três simulados.</p></div></div>
+    <div id="evolution"></div>
+  </div>
+
+  <div id="view-ranking" class="view">
+    <div class="top"><div><div class="eyebrow">Desempenho</div><div class="title">Ranking</div><p class="subtitle">Ordenado pelos resultados corrigidos.</p></div></div>
+    <div class="card"><div id="ranking"></div></div>
+  </div>
+
+  <div id="view-itens" class="view">
+    <div class="top"><div><div class="eyebrow">Banco de itens</div><div class="title">Questões</div><p class="subtitle">52 itens por simulado. O gabarito pode ser cadastrado aqui.</p></div></div>
+    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Simulado</label><select id="item-test" class="select" onchange="renderItems()"><option value="1">Simulado 1</option><option value="2">Simulado 2</option><option value="3">Simulado 3</option></select></div><div class="field"><label>Disciplina</label><select id="item-subject" class="select" onchange="renderItems()"><option value="">Todas</option><option>Matemática</option><option>Português</option></select></div></div><div id="items-table"></div></div>
+  </div>
+</main>
+</div>
+
+<div id="modal" class="modal"><div class="modal-box" id="modal-content"></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const initialStudents = [{"aluno_id": "2613807", "nome_aluno": "ADILSON GEORGE SILVA LIMA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3411947", "nome_aluno": "ANA BEATRIZ GOMES DA SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "4345112", "nome_aluno": "ANA BEATRIZ SILVA DE SOUSA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2885874", "nome_aluno": "ANTONIA ISABELE PEREIRA DA SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2858162", "nome_aluno": "CARLOS VINICIUS QUEIROZ FREITAS", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3583640", "nome_aluno": "DANIEL SANTOS SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2854332", "nome_aluno": "DANIEL SOUSA DE CASTRO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2942934", "nome_aluno": "DAVI MACIEL GUERRA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2216358", "nome_aluno": "DENNYS CARLOS PAULA PINTO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2923571", "nome_aluno": "DOMINIKY ALMEIDA CAVALCANTE", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2669297", "nome_aluno": "ESTER DE SOUSA RODRIGUES", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3583684", "nome_aluno": "FRANCISCO ALMIR SILVA ROCHA JUNIOR", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2880785", "nome_aluno": "FRANCISCO ARTHUR ABREU DOS SANTOS", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3783607", "nome_aluno": "FRANCISCO CRISTIANO FREITAS ARAUJO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2935815", "nome_aluno": "FRANCISCO DAVID ALEXANDRE PAIVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2890924", "nome_aluno": "FRANCISCO RIQUELMY LOPES BARROS", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3252192", "nome_aluno": "GABRIELA FERNANDES PIRES", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3584330", "nome_aluno": "GABRIEL SOUSA DE CASTRO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2893516", "nome_aluno": "JOANA DARC ARRUDA FREIRE", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2923616", "nome_aluno": "KAILLANY SILVA GOMES", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2941547", "nome_aluno": "LARYSSA CAPISTRANO COSTA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3584474", "nome_aluno": "LAYS ANDRADE ALMEIDA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2915886", "nome_aluno": "LUIZ FELIPE MEDEIROS DOS SANTOS", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2934650", "nome_aluno": "MARIA CLARA ALMEIDA DE SOUZA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2923694", "nome_aluno": "MARIA EDUARDA FERREIRA FELIX", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2020780", "nome_aluno": "MARIA EDUARDA SANTOS SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2941660", "nome_aluno": "MARIA EDUARDA SOUSA ALVES", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3254287", "nome_aluno": "MARIA HELOA CRUZ SANTIAGO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2943475", "nome_aluno": "MARIA HELYVANE MOURA MARTINS", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3552189", "nome_aluno": "MARIA PAMELLA PEREIRA SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2957984", "nome_aluno": "MARIA SUELLEN INACIO DA SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2920614", "nome_aluno": "MARIA YASMIM ALVES SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3540213", "nome_aluno": "MARJORY ANDRINNY VIEIRA PINHO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2922511", "nome_aluno": "MATHEUS DOUGLAS MESQUITA ALMEIDA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3413338", "nome_aluno": "PAULO RICARDO COSTA CARDOSO", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3287504", "nome_aluno": "RAYSSA DO NASCIMENTO SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "2712442", "nome_aluno": "RUTE BARBOSA OLIVEIRA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3547227", "nome_aluno": "SARAH TAUANE VASCONCELOS SILVA", "turma": "A", "serie": "3ª", "ativo": true}, {"aluno_id": "3414448", "nome_aluno": "ANA BEATRIZ SANTOS SOUSA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3289748", "nome_aluno": "ANA CARLA PEREIRA SILVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3222953", "nome_aluno": "ANA CECILIA FERREIRA ALVES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2947943", "nome_aluno": "ANA GESSICA SILVA SOARES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2854574", "nome_aluno": "ANTONIO CAIO COSTA DE FREITAS", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2874483", "nome_aluno": "CARLA VITORIA SOUSA PAIVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2914227", "nome_aluno": "EMILY VITORIA RIBEIRO COELHO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2884324", "nome_aluno": "ERNANDES PAIVA PRUDENCIO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2178282", "nome_aluno": "FRANCISCA ELAINE BRITO SILVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3412029", "nome_aluno": "FRANCISCA ELAINY SOUSA SANTOS", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2875892", "nome_aluno": "FRANCISCA SERENA NASCIMENTO DA SILVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2880796", "nome_aluno": "FRANCISCO ALEXANDRE PEREIRA SILVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2855879", "nome_aluno": "FRANCISCO DANILO LEITE ARAUJO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "1379795", "nome_aluno": "FRANCISCO ISAIAS DA SILVA SOUZA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3411355", "nome_aluno": "FRANCISCO LUAN ALMEIDA BARROSO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2954564", "nome_aluno": "FRANCISCO MIGUEL PAZ SAMPAIO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2911398", "nome_aluno": "GUILHERME ALVES DE SOUSA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "4687905", "nome_aluno": "IANE ANGELINE ALMEIDA DE SOUSA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3584337", "nome_aluno": "JERFFESSON LUAN ANDRADE NASCIMENTO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3811857", "nome_aluno": "KAIO GABRIEL FERNANDES NASCIMENTO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2876630", "nome_aluno": "KAYO VITOR OURIVES NASCIMENTO", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2875580", "nome_aluno": "LARA MARIA ARAUJO DA SILVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2406376", "nome_aluno": "MARIA CLARA DA SILVA SANTOS", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2875192", "nome_aluno": "MARIA DIANA CRUZ SILVA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "4994548", "nome_aluno": "MARIA EDUARDA SILVA SOUSA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3584505", "nome_aluno": "MARIA ELUIZA PEREIRA SOUSA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2955019", "nome_aluno": "MARIA MIKELLY DE SOUSA RODRIGUES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2867046", "nome_aluno": "MARIA MILENA SILVA GOMES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2949261", "nome_aluno": "MARIA NAELI NASCIMENTO GOMES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3413483", "nome_aluno": "MARIA VITORIA TEIXEIRA", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2958327", "nome_aluno": "MICHELE DA SILVA DE ABREU", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2922527", "nome_aluno": "NATIELY JULIAO ALVES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2893531", "nome_aluno": "PEDRO HENRIQUE ABREU SANTOS", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3413956", "nome_aluno": "RAYANNE ALVES GUIMARAES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2875457", "nome_aluno": "TAIS CRUZ FERNANDES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2916592", "nome_aluno": "TOME LUCAS SALVADOR", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "2875487", "nome_aluno": "WILLIANE CAVALCANTE GUIMARAES", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3276756", "nome_aluno": "YORRANA SANTOS DANTAS", "turma": "B", "serie": "3ª", "ativo": true}, {"aluno_id": "3586145", "nome_aluno": "ANA KETHELY NASCIMENTO SILVA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2939023", "nome_aluno": "ANA LUIZA ARAUJO MACIEL", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2858149", "nome_aluno": "ANTONIA CLARISSE SILVA FREITAS", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3413989", "nome_aluno": "ARTHUR BRUNO SOUSA GUIMARAES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3580636", "nome_aluno": "CLARA LAYANE DA SILVA VASCONCELOS", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "4071283", "nome_aluno": "CRISTIANO RONALDO DE SOUSA CAVALCANTE", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2891379", "nome_aluno": "EVELLY DE OLIVEIRA BARBOSA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2940789", "nome_aluno": "EXPEDITO ARAUJO PAULO", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "4527272", "nome_aluno": "FRANCISCA ANGELINA SILVA ANDRADE", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2953093", "nome_aluno": "FRANCISCA IARA SILVA BEZERRA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2944172", "nome_aluno": "FRANCISCO ARIEL LIMA CRUZ", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2919602", "nome_aluno": "FRANCISCO CAUA PAIVA ARAUJO", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3403409", "nome_aluno": "FRANCISCO DAS CHAGAS GOMES PEREIRA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3583751", "nome_aluno": "FRANCISCO DAVID CAVALCANTE UCHOA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2885915", "nome_aluno": "FRANCISCO GUILHERME BARBOSA TAVARES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2947061", "nome_aluno": "FRANCISCO JANDERSON SOUSA DE MORAES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2919610", "nome_aluno": "FRANCISCO LEANDRO BARBOSA ALVES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "4354549", "nome_aluno": "FRANCISCO LUAN CASTRO PEREIRA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2941128", "nome_aluno": "FRANCISCO RUAN BARBOSA SILVA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2875547", "nome_aluno": "FRANCISCO TIAGO DE JESUS CRUZ", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3539966", "nome_aluno": "JOAO VICTOR INACIO DE ARRUDA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2948564", "nome_aluno": "JONAS PEREIRA SANTANA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3555600", "nome_aluno": "KAIO ABNER DE SOUSA GOMES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "4291198", "nome_aluno": "KAIO SALES COSTA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2151104", "nome_aluno": "LETICIA DOS SANTOS BARBOSA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2941602", "nome_aluno": "LOANNE ALVES FERNANDES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2750162", "nome_aluno": "LUAN MEDEIROS CRUZ", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3584482", "nome_aluno": "LUIS GUSTAVO SOUSA SANTIAGO", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "5234530", "nome_aluno": "LYOTO DAVID DE OLIVEIRA RODRIGUES", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3223294", "nome_aluno": "MARCIO TADEU BRAGA LOURENCO", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3584484", "nome_aluno": "MARIA CLARA SOUSA SILVA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2881318", "nome_aluno": "MARIA EDUARDA CUNHA XAVIER", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "3412412", "nome_aluno": "MARIA KAYLANNE HONORATO AMORIM", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2943510", "nome_aluno": "MARIA NATALICE FERREIRA LEITE", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "4693762", "nome_aluno": "PEDRO RANGEL GOMES CAVALCANTE", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2880889", "nome_aluno": "RAYANE MEDEIROS DE SOUSA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "5042888", "nome_aluno": "REBECCA VITORIA SANTOS DIAS", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2916271", "nome_aluno": "VITORIA ELLEN CANUTO DE SOUSA", "turma": "C", "serie": "3ª", "ativo": true}, {"aluno_id": "2728097", "nome_aluno": "ANA BEATRIZ MENDES RODRIGUES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2865103", "nome_aluno": "ANA ISABELA VIANA BARROS CORDEIRO", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3422727", "nome_aluno": "CARLA ARIANE SOUSA ALVES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3278618", "nome_aluno": "CARLOS ANDRE DE MOURA AQUINO", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3414484", "nome_aluno": "CHRISTIAN RONALD SOUSA DAMIAO", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2866695", "nome_aluno": "DIROGERES ANASTACIO SOARES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "4264609", "nome_aluno": "FAUSTA MABELLE ALMEIDA PEREIRA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2866754", "nome_aluno": "FELIPE ALVES DE SOUSA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2935774", "nome_aluno": "FRANCISCA VITORIA PAIVA PIRES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2866233", "nome_aluno": "FRANCISCA YVILEN BRANDAO SOUZA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2259006", "nome_aluno": "FRANCISCO ANTONIO RICHARLYSON ALVES DE OLIVEIRA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2911798", "nome_aluno": "FRANCISCO GEILSON PEREIRA SILVA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2944293", "nome_aluno": "FRANCISCO WESLEN OLIVEIRA VASCONCELOS", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "4540590", "nome_aluno": "GUILHERME SILVA TITARA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2925873", "nome_aluno": "GUILHERME WILLIAM ANDRADE SILVA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3806102", "nome_aluno": "IARA SANTOS VARELA SILVA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "5263204", "nome_aluno": "ISAQUE SANTOS DIAS", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2947719", "nome_aluno": "JHENYFFER ROCHA PEREIRA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3292607", "nome_aluno": "JOAO PEDRO SILVA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2937284", "nome_aluno": "JOSE ARTHUR ARRUDA ARAUJO", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2866597", "nome_aluno": "JOSE OTAVIO DE MORAES SILVA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2865393", "nome_aluno": "JOSE WESLEY SANTOS PEREIRA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2944368", "nome_aluno": "KAIO RONALD VIANA SANTOS", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3969198", "nome_aluno": "LARA TAMYSIA RODRIGUES DE SOUSA", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2943382", "nome_aluno": "LAYNE MARA CARDOSO NUNES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "5165529", "nome_aluno": "LAYSA NICOLE MENDONCA MEDEIROS", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3411945", "nome_aluno": "MARIA EDUARDA GOMES SANTOS", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "3791579", "nome_aluno": "MARIA MARTA COLARES PINTO", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2943546", "nome_aluno": "MARIA VITORIA ALVES DE CASTRO", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "5251933", "nome_aluno": "MATHEUS SILVA DOS SANTOS", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "5128744", "nome_aluno": "PEDRO MARLON SOUSA MAGALHAES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2858045", "nome_aluno": "RAFAEL SILVA RODRIGUES", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "2908607", "nome_aluno": "WELLINGTON MARIANO MACIEL", "turma": "D", "serie": "3ª", "ativo": true}, {"aluno_id": "4921233", "nome_aluno": "ANA VANESSA OLIVEIRA FERNANDES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2942846", "nome_aluno": "ANTONIA GABRIELE SOUSA MARTINS", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3413492", "nome_aluno": "ANTONIA SAMARA CUNHA MARIANO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3413379", "nome_aluno": "ANTONIO ENDERSON NASCIMENTO DE SOUSA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2935626", "nome_aluno": "ANTONIO LUCIEL PAULINO DUARTE", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3507965", "nome_aluno": "ANTONIO MANUEL FERREIRA DE MORAIS FILHO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2939116", "nome_aluno": "ARIEL LOPES FREIRE GOMES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2498061", "nome_aluno": "CARLOS EDUARDO LOPES DA SILVA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3413441", "nome_aluno": "DANIELLY SILVA ALVES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "4526698", "nome_aluno": "EMILLY RIBEIRO MARIANO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2865135", "nome_aluno": "FRANCISCA GIZELE SILVA TEIXEIRA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2935679", "nome_aluno": "FRANCISCA LARISSA GONCALVES SILVA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2944145", "nome_aluno": "FRANCISCO ANTONIO FERREIRA CARNEIRO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3565160", "nome_aluno": "FRANCISCO ANTONIO FREITAS GOMES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2864740", "nome_aluno": "FRANCISCO DAVI BANDEIRA JALES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2866783", "nome_aluno": "FRANCISCO DOUGLAS CAVALCANTE SILVA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2890911", "nome_aluno": "FRANCISCO JUNIOR MUNIZ ALVES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2943019", "nome_aluno": "FRANCISCO KAUE BERNARDO LAURINDO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2911371", "nome_aluno": "GLEYCIANE PAULA MARQUES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2861847", "nome_aluno": "GUILHERME DOS SANTOS LOPES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2866845", "nome_aluno": "HALLEY MOREIRA DA SILVA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2944317", "nome_aluno": "ISABELE SILVA LIMA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3565193", "nome_aluno": "JAMILLY LIMA SIMAO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2943263", "nome_aluno": "JOAO ROMERIO FERREIRA DO NASCIMENTO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2866943", "nome_aluno": "JULIO CEZAR ALVES PEREIRA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2866621", "nome_aluno": "KAUA SOARES SANTOS", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2941228", "nome_aluno": "LANA MIRELLA OURIVES SILVA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2865551", "nome_aluno": "LARISSA DE SOUSA MARTINS", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2888801", "nome_aluno": "MARIA ANGELINA BARROS BEZERRA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2926827", "nome_aluno": "MARIA ELOA SOARES GOMES", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2916436", "nome_aluno": "MARIA SUYANE SANTOS DA SILVA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2867309", "nome_aluno": "MATHEUS SILVA CRUZ", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "5127427", "nome_aluno": "MATHEUS SOUSA DO NASCIMENTO", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "3980794", "nome_aluno": "MYRELLA SOUSA ALMEIDA", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2948949", "nome_aluno": "PABLO DIAS FREITAS", "turma": "E", "serie": "3ª", "ativo": true}, {"aluno_id": "2942961", "nome_aluno": "ANA BEATRIZ DOS SANTOS SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2946547", "nome_aluno": "ANA CLARA SILVA DO NASCIMENTO", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3233286", "nome_aluno": "ANTONIA LUCIELY GOMES DA SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2865690", "nome_aluno": "ANTONIA SOFIA SILVA ANDRADE", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3413403", "nome_aluno": "ELIAB SILVA FRANCA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2925784", "nome_aluno": "FRANCISCA MARIA SILVA CASTRO", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2941034", "nome_aluno": "FRANCISCA VITORIA FERREIRA DA SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "4350593", "nome_aluno": "FRANCISCO DANIEL BENTO FERREIRA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3955882", "nome_aluno": "FRANCISCO IGOR LINO DA SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2943087", "nome_aluno": "FRANCISCO KESLLEY RYAN GOMES ALMEIDA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2880857", "nome_aluno": "FRANCISCO LUCIVANDO LIMA COELHO", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "5241207", "nome_aluno": "IVNA KEVILEN MARCELINO ABREU", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2943232", "nome_aluno": "JAMILY NASCIMENTO DA SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2865275", "nome_aluno": "JOAO PEDRO ANASTACIO BARROS", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3289471", "nome_aluno": "JOAO PEDRO ESTEVAO RODRIGUES", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "4350332", "nome_aluno": "KAIO RODRIGO MAGALHAES SANTOS", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2944621", "nome_aluno": "KAUAN SANTOS ALVES", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2922271", "nome_aluno": "LEVI DA SILVA LIMA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3411964", "nome_aluno": "LUCAS DE SOUSA FRANCELINO", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2935059", "nome_aluno": "LUIS GUSTAVO PINTO BATISTA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3411963", "nome_aluno": "LUIS HENRIQUE SAMPAIO FERREIRA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2944848", "nome_aluno": "MARCOS VINICIUS DOS SANTOS", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2915927", "nome_aluno": "MARIA EDUARDA DE FREITAS", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2882277", "nome_aluno": "MARIA EDUARDA GOMES SILVEIRA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "4264680", "nome_aluno": "PABLO JUANN CAVALCANTE ARRUDA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2944503", "nome_aluno": "PEDRO VINICIUS DA SILVA BARBOSA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3419832", "nome_aluno": "PIETRA ABREU SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3809735", "nome_aluno": "PRISCILA DE ASSIS NASCIMENTO", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2944566", "nome_aluno": "RONES LUAN VIEIRA DA SILVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "2936362", "nome_aluno": "ROSELINA SILVA CESAR", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "5127736", "nome_aluno": "SAMUEL ABREU DE PAIVA", "turma": "F", "serie": "3ª", "ativo": true}, {"aluno_id": "3412024", "nome_aluno": "YUDI DA SILVA SANTOS", "turma": "F", "serie": "3ª", "ativo": true}];
+const initialResponses = [{"Matrícula": "", "Aluno": "Adilson George Silva Vieira", "Turma": "", "Simulado": "Simulado 1", "Q01": "A", "Q02": "A", "Q03": "A", "Q04": "C", "Q05": "B", "Q06": "D", "Q07": "A", "Q08": "B", "Q09": "C", "Q10": "E", "Q11": "B", "Q12": "A", "Q13": "E", "Q14": "C", "Q15": "E", "Q16": "C", "Q17": "A", "Q18": "E", "Q19": "C", "Q20": "B", "Q21": "C", "Q22": "A", "Q23": "D", "Q24": "E", "Q25": "B", "Q26": "D", "Q27": "E", "Q28": "C", "Q29": "D", "Q30": "D", "Q31": "E", "Q32": "C", "Q33": "A", "Q34": "A", "Q35": "E", "Q36": "E", "Q37": "D", "Q38": "C", "Q39": "A", "Q40": "C", "Q41": "E", "Q42": "C", "Q43": "D", "Q44": "A", "Q45": "C", "Q46": "E", "Q47": "C", "Q48": "E", "Q49": "C", "Q50": "E", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Ana Beatriz Gomes da Silva", "Turma": "", "Simulado": "Simulado 1", "Q01": "C", "Q02": "A", "Q03": "B", "Q04": "C", "Q05": "B", "Q06": "A", "Q07": "A", "Q08": "B", "Q09": "B", "Q10": "A", "Q11": "A", "Q12": "C", "Q13": "C", "Q14": "E", "Q15": "E", "Q16": "A", "Q17": "D", "Q18": "C", "Q19": "B", "Q20": "B", "Q21": "D", "Q22": "E", "Q23": "D", "Q24": "E", "Q25": "E", "Q26": "D", "Q27": "E", "Q28": "C", "Q29": "B", "Q30": "C", "Q31": "D", "Q32": "C", "Q33": "A", "Q34": "A", "Q35": "E", "Q36": "E", "Q37": "D", "Q38": "A", "Q39": "A", "Q40": "C", "Q41": "E", "Q42": "C", "Q43": "D", "Q44": "A", "Q45": "C", "Q46": "C", "Q47": "D", "Q48": "E", "Q49": "B", "Q50": "E", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Ana Beatriz Silva de Sousa", "Turma": "", "Simulado": "Simulado 1", "Q01": "C", "Q02": "A", "Q03": "D", "Q04": "C", "Q05": "B", "Q06": "A", "Q07": "E", "Q08": "B", "Q09": "D", "Q10": "D", "Q11": "B", "Q12": "E", "Q13": "E", "Q14": "B", "Q15": "E", "Q16": "A", "Q17": "D", "Q18": "A", "Q19": "D", "Q20": "B", "Q21": "A", "Q22": "E", "Q23": "D", "Q24": "E", "Q25": "D", "Q26": "D", "Q27": "E", "Q28": "C", "Q29": "E", "Q30": "C", "Q31": "D", "Q32": "C", "Q33": "A", "Q34": "C", "Q35": "E", "Q36": "E", "Q37": "D", "Q38": "C", "Q39": "A", "Q40": "C", "Q41": "E", "Q42": "B", "Q43": "A", "Q44": "A", "Q45": "C", "Q46": "E", "Q47": "A", "Q48": "A", "Q49": "C", "Q50": "D", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Antônia Isabele Pereira da Silva", "Turma": "", "Simulado": "Simulado 1", "Q01": "D", "Q02": "A", "Q03": "A", "Q04": "C", "Q05": "D", "Q06": "A", "Q07": "C", "Q08": "B", "Q09": "D", "Q10": "C", "Q11": "A", "Q12": "D", "Q13": "C", "Q14": "B", "Q15": "C", "Q16": "A", "Q17": "A", "Q18": "B", "Q19": "D", "Q20": "E", "Q21": "E", "Q22": "E", "Q23": "A", "Q24": "E", "Q25": "E", "Q26": "D", "Q27": "E", "Q28": "C", "Q29": "E", "Q30": "D", "Q31": "E", "Q32": "C", "Q33": "A", "Q34": "E", "Q35": "C", "Q36": "E", "Q37": "D", "Q38": "A", "Q39": "B", "Q40": "D", "Q41": "B", "Q42": "C", "Q43": "C", "Q44": "E", "Q45": "C", "Q46": "E", "Q47": "C", "Q48": "A", "Q49": "B", "Q50": "D", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Carlos Vinicius Queiroz Freitas", "Turma": "", "Simulado": "Simulado 1", "Q01": "C", "Q02": "A", "Q03": "A", "Q04": "C", "Q05": "B", "Q06": "D", "Q07": "E", "Q08": "B", "Q09": "D", "Q10": "E", "Q11": "B", "Q12": "A", "Q13": "B", "Q14": "A", "Q15": "E", "Q16": "A", "Q17": "D", "Q18": "E", "Q19": "C", "Q20": "B", "Q21": "C", "Q22": "E", "Q23": "D", "Q24": "E", "Q25": "B", "Q26": "D", "Q27": "E", "Q28": "C", "Q29": "C", "Q30": "C", "Q31": "E", "Q32": "C", "Q33": "A", "Q34": "A", "Q35": "E", "Q36": "E", "Q37": "D", "Q38": "A", "Q39": "A", "Q40": "C", "Q41": "B", "Q42": "C", "Q43": "D", "Q44": "A", "Q45": "C", "Q46": "E", "Q47": "C", "Q48": "B", "Q49": "E", "Q50": "E", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Daniel Santos Silva", "Turma": "", "Simulado": "Simulado 1", "Q01": "D", "Q02": "C", "Q03": "A", "Q04": "B", "Q05": "B", "Q06": "C", "Q07": "D", "Q08": "E", "Q09": "D", "Q10": "E", "Q11": "C", "Q12": "C", "Q13": "A", "Q14": "C", "Q15": "E", "Q16": "A", "Q17": "A", "Q18": "C", "Q19": "B", "Q20": "B", "Q21": "D", "Q22": "E", "Q23": "D", "Q24": "E", "Q25": "B", "Q26": "D", "Q27": "E", "Q28": "E", "Q29": "D", "Q30": "E", "Q31": "E", "Q32": "C", "Q33": "A", "Q34": "A", "Q35": "E", "Q36": "E", "Q37": "D", "Q38": "C", "Q39": "A", "Q40": "D", "Q41": "C", "Q42": "C", "Q43": "D", "Q44": "A", "Q45": "C", "Q46": "E", "Q47": "A", "Q48": "C", "Q49": "C", "Q50": "C", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Daniel Sousa de Castro", "Turma": "", "Simulado": "Simulado 1", "Q01": "C", "Q02": "C", "Q03": "D", "Q04": "E", "Q05": "D", "Q06": "A", "Q07": "D", "Q08": "E", "Q09": "C", "Q10": "C", "Q11": "B", "Q12": "B", "Q13": "D", "Q14": "C", "Q15": "C", "Q16": "D", "Q17": "B", "Q18": "C", "Q19": "C", "Q20": "B", "Q21": "D", "Q22": "E", "Q23": "C", "Q24": "B", "Q25": "C", "Q26": "D", "Q27": "D", "Q28": "C", "Q29": "B", "Q30": "C", "Q31": "E", "Q32": "A", "Q33": "C", "Q34": "C", "Q35": "E", "Q36": "E", "Q37": "C", "Q38": "C", "Q39": "C", "Q40": "D", "Q41": "C", "Q42": "B", "Q43": "D", "Q44": "D", "Q45": "E", "Q46": "C", "Q47": "E", "Q48": "B", "Q49": "C", "Q50": "D", "Q51": "D", "Q52": "C"}, {"Matrícula": "", "Aluno": "Davi Maciel Guerra", "Turma": "", "Simulado": "Simulado 1", "Q01": "C", "Q02": "A", "Q03": "E", "Q04": "D", "Q05": "A", "Q06": "D", "Q07": "A", "Q08": "B", "Q09": "C", "Q10": "E", "Q11": "A", "Q12": "A", "Q13": "C", "Q14": "C", "Q15": "E", "Q16": "D", "Q17": "D", "Q18": "A", "Q19": "D", "Q20": "A", "Q21": "A", "Q22": "E", "Q23": "D", "Q24": "C", "Q25": "A", "Q26": "C", "Q27": "E", "Q28": "E", "Q29": "B", "Q30": "C", "Q31": "E", "Q32": "A", "Q33": "E", "Q34": "A", "Q35": "E", "Q36": "D", "Q37": "C", "Q38": "A", "Q39": "A", "Q40": "C", "Q41": "B", "Q42": "C", "Q43": "A", "Q44": "B", "Q45": "E", "Q46": "C", "Q47": "D", "Q48": "A", "Q49": "B", "Q50": "D", "Q51": "C", "Q52": "E"}, {"Matrícula": "", "Aluno": "Dennys Carlos Paula Pinto", "Turma": "", "Simulado": "Simulado 1", "Q01": "B", "Q02": "D", "Q03": "A", "Q04": "D", "Q05": "B", "Q06": "A", "Q07": "A", "Q08": "B", "Q09": "A", "Q10": "E", "Q11": "B", "Q12": "B", "Q13": "E", "Q14": "C", "Q15": "B", "Q16": "E", "Q17": "D", "Q18": "D", "Q19": "E", "Q20": "B", "Q21": "A", "Q22": "E", "Q23": "C", "Q24": "E", "Q25": "D", "Q26": "D", "Q27": "E", "Q28": "B", "Q29": "D", "Q30": "E", "Q31": "D", "Q32": "A", "Q33": "A", "Q34": "C", "Q35": "E", "Q36": "E", "Q37": "E", "Q38": "C", "Q39": "A", "Q40": "D", "Q41": "B", "Q42": "C", "Q43": "B", "Q44": "D", "Q45": "C", "Q46": "E", "Q47": "C", "Q48": "D", "Q49": "C", "Q50": "E", "Q51": "C", "Q52": "C"}, {"Matrícula": "", "Aluno": "Dominiky Almeida Cavalcante", "Turma": "", "Simulado": "Simulado 1", "Q01": "C", "Q02": "A", "Q03": "A", "Q04": "C", "Q05": "C", "Q06": "C", "Q07": "A", "Q08": "B", "Q09": "A", "Q10": "B", "Q11": "B", "Q12": "E", "Q13": "C", "Q14": "A", "Q15": "E", "Q16": "A", "Q17": "A", "Q18": "D", "Q19": "C", "Q20": "B", "Q21": "A", "Q22": "E", "Q23": "D", "Q24": "E", "Q25": "B", "Q26": "D", "Q27": "E", "Q28": "B", "Q29": "E", "Q30": "D", "Q31": "E", "Q32": "C", "Q33": "A", "Q34": "A", "Q35": "E", "Q36": "E", "Q37": "D", "Q38": "C", "Q39": "A", "Q40": "C", "Q41": "B", "Q42": "C", "Q43": "D", "Q44": "D", "Q45": "C", "Q46": "D", "Q47": "D", "Q48": "A", "Q49": "C", "Q50": "D", "Q51": "D", "Q52": "C"}];
+const classes=["A","B","C","D","E","F"];
+const difficulties=["Fácil","Fácil","Fácil","Fácil","Fácil","Médio","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Médio","Médio","Fácil","Médio","Médio","Médio","Fácil","Fácil","Médio","Difícil","Fácil","Fácil","Médio","Fácil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio","Difícil","Fácil","Médio"];
+const workingKey=["D", "A", "A", "C", "B", "D", "A", "B", "D", "E", "B", "A", "E", "C", "E", "C", "A", "E", "C", "B", "C", "D", "D", "E", "B", "D", "E", "C", "B", "D", "E", "C", "A", "A", "E", "E", "D", "C", "A", "C", "B", "C", "D", "A", "C", "E", "C", "A", "C", "E", "D", "C"];
+const state={
+ students:JSON.parse(localStorage.getItem("spaece_students")||"null")||initialStudents,
+ responses:JSON.parse(localStorage.getItem("spaece_responses")||"null")||initialResponses,
+ keys:JSON.parse(localStorage.getItem("spaece_keys")||"null")||Object.fromEntries(workingKey.map((v,i)=>["1-"+(i+1),v])),
+ draft:{}
+};
+function persist(){localStorage.setItem("spaece_students",JSON.stringify(state.students));localStorage.setItem("spaece_responses",JSON.stringify(state.responses));localStorage.setItem("spaece_keys",JSON.stringify(state.keys))}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toast(s){const t=document.getElementById("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function pct(n){return n==null?"—":(n*100).toFixed(1)+"%"}
+function answersOf(r){return Array.from({length:52},(_,i)=>r["Q"+String(i+1).padStart(2,"0")]||"")}
+function getKey(test,q){return state.keys[test+"-"+q]||""}
+function calcRecord(rec){
+ const answers=answersOf(rec), sim=String(rec.Simulado||"1").replace(/\D/g,"")||"1";
+ const keys=answers.map((_,i)=>getKey(sim,i+1));
+ const result={math:{total:26,correct:0,blank:0,byDiff:{Fácil:{correct:0,total:0},Médio:{correct:0,total:0},Difícil:{correct:0,total:0}}},port:{total:26,correct:0,blank:0,byDiff:{Fácil:{correct:0,total:0},Médio:{correct:0,total:0},Difícil:{correct:0,total:0}}}};
+ let hasKey=false;
+ answers.forEach((a,i)=>{
+   const k=keys[i], d=difficulties[i], subject=i<26?"math":"port";
+   if(k) hasKey=true;
+   if(!a||a==="NR"){result[subject].blank++;return}
+   if(k){
+     result[subject].byDiff[d].total++;
+     if(a===k){result[subject].correct++;result[subject].byDiff[d].correct++}
+   }
+ });
+ if(!hasKey)return null;
+ result.total=52; result.correct=result.math.correct+result.port.correct; result.blank=result.math.blank+result.port.blank;
+ result.percent=result.correct/52; result.math.percent=result.math.correct/26; result.port.percent=result.port.correct/26;
+ return result;
+}
+function findStudent(name,id){
+ if(id){const x=state.students.find(s=>s.aluno_id===id);if(x)return x}
+ const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g," ").trim();
+ return state.students.find(s=>norm(s.nome_aluno)===norm(name))||null;
+}
+function showView(v){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.getElementById("view-"+v).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===v));renderAll()}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function populateSelects(){
+ const opts=classes.map(c=>`<option value="${c}">3ª ${c}</option>`).join("");
+ ["student-class-filter","res-class"].forEach(id=>{const el=document.getElementById(id);if(el){const first=el.options[0].outerHTML;el.innerHTML=first+opts}});
+ document.getElementById("launch-class").innerHTML=opts;
+ populateLaunchStudents();
+}
+function populateLaunchStudents(){const c=document.getElementById("launch-class").value;document.getElementById("launch-student").innerHTML=state.students.filter(s=>s.turma===c).map(s=>`<option value="${esc(s.aluno_id)}">${esc(s.nome_aluno)}</option>`).join("");}
+function renderHome(){
+ const active=state.students.filter(s=>s.ativo!==false);
+ const corrected=state.responses.map(r=>({r,c:calcRecord(r)})).filter(x=>x.c);
+ document.getElementById("m-students").textContent=active.length;
+ document.getElementById("m-answers").textContent=state.responses.reduce((n,r)=>n+answersOf(r).filter(Boolean).length,0);
+ document.getElementById("m-results").textContent=corrected.length;
+ document.getElementById("m-average").textContent=corrected.length?pct(corrected.reduce((n,x)=>n+x.c.percent,0)/corrected.length):"—";
+ document.getElementById("home-classes").innerHTML=classes.map(c=>{
+   const n=active.filter(s=>s.turma===c).length, rs=state.responses.filter(r=>findStudent(r.Aluno,r.Matrícula)?.turma===c);
+   const cr=rs.map(r=>calcRecord(r)).filter(Boolean), avg=cr.length?cr.reduce((a,b)=>a+b.percent,0)/cr.length:null;
+   return `<div class="card class-card" onclick="openClass('${c}')"><h3>3ª ${c}</h3><div class="class-number">${n}</div><div class="muted">alunos cadastrados</div><div class="bar" style="margin-top:12px"><span style="width:${Math.min(100,n/40*100)}%"></span></div><div class="muted" style="margin-top:7px">${rs.length} lançamento(s) · média ${pct(avg)}</div></div>`
+ }).join("");
+ const last=state.responses.slice(-5).reverse();
+ document.getElementById("home-results").innerHTML=last.length?`<div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Simulado</th><th>Resultado</th></tr></thead><tbody>${last.map(r=>{const s=findStudent(r.Aluno,r.Matrícula),c=calcRecord(r);return `<tr><td>${esc(s?.nome_aluno||r.Aluno)}</td><td>${esc(r.Simulado)}</td><td>${c?`<span class="pill ok">${c.correct}/52 · ${pct(c.percent)}</span>`:`<span class="pill pending">Aguardando gabarito</span>`}</td></tr>`}).join("")}</tbody></table></div>`:`<div class="empty">Nenhum lançamento.</div>`;
+}
+function renderClasses(){document.getElementById("class-grid").innerHTML=classes.map(c=>{const ss=state.students.filter(s=>s.turma===c);const rs=state.responses.filter(r=>findStudent(r.Aluno,r.Matrícula)?.turma===c);return `<div class="card class-card" onclick="openClass('${c}')"><h3>3ª ${c}</h3><div class="class-number">${ss.length}</div><div class="muted">alunos</div><p>${rs.length} lançamento(s)</p><button class="btn">Ver turma</button></div>`}).join("")}
+function openClass(c){showView("alunos");document.getElementById("student-class-filter").value=c;renderStudents()}
+function renderStudents(){
+ const c=document.getElementById("student-class-filter").value, q=document.getElementById("student-search").value.toUpperCase();
+ const list=state.students.filter(s=>(!c||s.turma===c)&&(!q||s.nome_aluno.includes(q)||s.aluno_id.includes(q)));
+ document.getElementById("students-table").innerHTML=`<div class="muted" style="margin-bottom:8px">${list.length} aluno(s)</div><div class="table-wrap"><table><thead><tr><th>Matrícula</th><th>Nome</th><th>Turma</th><th>Status</th><th></th></tr></thead><tbody>${list.map(s=>`<tr><td>${esc(s.aluno_id)}</td><td><b>${esc(s.nome_aluno)}</b></td><td>3ª ${esc(s.turma)}</td><td><span class="pill ${s.ativo===false?"pending":"ok"}">${s.ativo===false?"Inativo":"Ativo"}</span></td><td><button class="btn" onclick='openStudent(${JSON.stringify(s.aluno_id)})'>Editar</button></td></tr>`).join("")}</tbody></table></div>`;
+}
+function renderTests(){document.getElementById("tests-grid").innerHTML=[1,2,3].map(n=>{const count=Object.keys(state.keys).filter(k=>k.startsWith(n+"-")&&state.keys[k]).length;const rs=state.responses.filter(r=>String(r.Simulado).includes(String(n))).length;return `<div class="card"><h3 style="margin:0;color:var(--green)">Simulado ${n}</h3><p>${count}/52 gabaritos cadastrados</p><p>${rs} lançamento(s)</p><button class="btn primary" onclick="openItemsFor(${n})">Gerenciar questões</button></div>`}).join("")}
+function openItemsFor(n){showView("itens");document.getElementById("item-test").value=n;renderItems()}
+function renderResults(){
+ const c=document.getElementById("res-class").value, test=document.getElementById("res-test").value;
+ const rows=[];
+ state.responses.forEach(r=>{
+   const s=findStudent(r.Aluno,r.Matrícula), cr=calcRecord(r); if(!s||!cr)return;
+   const sim=String(r.Simulado).replace(/\D/g,"")||"1";
+   if(c&&s.turma!==c||test&&sim!==test)return;
+   rows.push({s,r,cr});
+ });
+ document.getElementById("results-table").innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Total</th><th>Geral</th><th>Fácil</th><th>Médio</th><th>Difícil</th><th>Ação</th></tr></thead><tbody>${rows.sort((a,b)=>b.cr.percent-a.cr.percent).map(x=>{
+   const dif=["Fácil","Médio","Difícil"].map(d=>{let co=0,to=0;["math","port"].forEach(k=>{co+=x.cr[k].byDiff[d].correct;to+=x.cr[k].byDiff[d].total});return to?`${co}/${to}`:"—"});
+   return `<tr><td><b>${esc(x.s.nome_aluno)}</b></td><td>3ª ${x.s.turma}</td><td>${esc(x.r.Simulado)}</td><td>${x.cr.math.correct}/26</td><td>${x.cr.port.correct}/26</td><td><b>${x.cr.correct}/52</b></td><td><b>${pct(x.cr.percent)}</b></td><td>${dif[0]}</td><td>${dif[1]}</td><td>${dif[2]}</td><td><button class="btn small" onclick="showStudentDetail('${x.s.aluno_id}','${sim}')">Ver</button></td></tr>`
+ }).join("")}</tbody></table></div>`:`<div class="empty">Nenhum resultado corrigido.</div>`;
+}
+function renderEvolution(){
+ const by={};state.responses.forEach(r=>{const s=findStudent(r.Aluno,r.Matrícula);const c=calcRecord(r);if(!s||!c)return;(by[s.turma]??={1:[],2:[],3:[]})[String(r.Simulado).replace(/\D/g,"")||"1"].push(c.percent)});
+ document.getElementById("evolution").innerHTML=classes.map(cl=>{const x=by[cl]||{1:[],2:[],3:[]};return `<div class="card section"><h2>3ª ${cl}</h2><div class="grid" style="grid-template-columns:repeat(3,1fr)">${[1,2,3].map(n=>`<div><div class="muted">Simulado ${n}</div><div class="metric">${x[n].length?pct(x[n].reduce((a,b)=>a+b,0)/x[n].length):"—"}</div></div>`).join("")}</div></div>`}).join("")}
+function renderRanking(){
+ const grouped={};state.responses.forEach(r=>{const s=findStudent(r.Aluno,r.Matrícula),c=calcRecord(r);if(!s||!c)return;(grouped[s.aluno_id]??={s,vals:[]}).vals.push(c.percent)});
+ const arr=Object.values(grouped).map(x=>({...x,avg:x.vals.reduce((a,b)=>a+b,0)/x.vals.length})).sort((a,b)=>b.avg-a.avg);
+ document.getElementById("ranking").innerHTML=arr.length?`<div class="ranking">${arr.map((x,i)=>`<div class="rank-row"><div class="rank-no ${i===0?"first":""}">${i+1}</div><div class="rank-name"><b>${esc(x.s.nome_aluno)}</b><div class="muted">3ª ${x.s.turma}</div></div><div><b>${pct(x.avg)}</b></div></div>`).join("")}</div>`:`<div class="empty">O ranking aparecerá após o cadastro do gabarito.</div>`;
+}
+function renderItems(){
+ const n=document.getElementById("item-test").value, sub=document.getElementById("item-subject").value;
+ const items=Array.from({length:52},(_,i)=>({q:i+1,sub:i<26?"Matemática":"Português",dif:difficulties[i]})).filter(x=>!sub||x.sub===sub);
+ document.getElementById("items-table").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Questão</th><th>Disciplina</th><th>Dificuldade</th><th>Gabarito</th><th></th></tr></thead><tbody>${items.map(x=>`<tr><td>Q${String(x.q).padStart(2,"0")}</td><td>${x.sub}</td><td>${x.dif}</td><td><select class="select" style="width:80px;padding:7px" id="key-${n}-${x.q}"><option value="">—</option>${["A","B","C","D","E"].map(o=>`<option ${getKey(n,x.q)===o?"selected":""}>${o}</option>`).join("")}</select></td><td><button class="btn primary" onclick="saveKey(${n},${x.q})">Salvar</button></td></tr>`).join("")}</tbody></table></div>`;
+}
+function saveKey(n,q){state.keys[n+"-"+q]=document.getElementById(`key-${n}-${q}`).value;persist();toast(`Gabarito Q${String(q).padStart(2,"0")} salvo`);renderAll()}
+function openStudent(id=""){
+ const s=state.students.find(x=>x.aluno_id===id)||{aluno_id:"",nome_aluno:"",turma:"A",serie:"3ª",ativo:true};
+ document.getElementById("modal-content").innerHTML=`<div class="modal-head"><h2>${id?"Editar aluno":"Novo aluno"}</h2><button class="btn" onclick="closeModal()">Fechar</button></div><div class="form-grid"><div class="field"><label>Matrícula</label><input id="sf-id" class="input" value="${esc(s.aluno_id)}" ${id?"readonly":""}></div><div class="field"><label>Nome</label><input id="sf-name" class="input" value="${esc(s.nome_aluno)}"></div><div class="field"><label>Turma</label><select id="sf-class" class="select">${classes.map(c=>`<option ${s.turma===c?"selected":""}>${c}</option>`).join("")}</select></div></div><div class="form-actions"><button class="btn primary" onclick="saveStudent('${esc(id)}')">Salvar</button></div>`;
+ document.getElementById("modal").classList.add("open");
+}
+function saveStudent(oldId){const id=document.getElementById("sf-id").value.trim(),name=document.getElementById("sf-name").value.trim().toUpperCase(),turma=document.getElementById("sf-class").value;if(!id||!name){toast("Preencha matrícula e nome");return}if(!oldId&&state.students.some(s=>s.aluno_id===id)){toast("Matrícula já cadastrada");return}if(oldId){const s=state.students.find(x=>x.aluno_id===oldId);Object.assign(s,{nome_aluno:name,turma})}else state.students.push({aluno_id:id,nome_aluno:name,turma,serie:"3ª",ativo:true});persist();closeModal();toast("Aluno salvo");renderAll()}
+function openLaunch(){showView("lancar")}
+function renderQuestions(){
+ const grid=document.getElementById("answer-grid");grid.innerHTML=Array.from({length:52},(_,i)=>{const q=i+1,key="Q"+String(q).padStart(2,"0"),v=state.draft[key]||"";return `<div class="q"><div class="qhead"><b>${key} · ${q<=26?"Matemática":"Português"}</b><span class="muted">${difficulties[i]}</span></div><div class="opts">${["A","B","C","D","E","NR"].map(o=>`<button class="opt ${o==="NR"?"nr":""} ${v===o?"sel":""}" onclick="setAnswer('${key}','${o}')">${o}</button>`).join("")}</div></div>`}).join("");
+}
+function setAnswer(q,v){state.draft[q]=v;renderQuestions()}
+function clearDraft(){state.draft={};renderQuestions()}
+function saveLaunch(){
+ const aluno=document.getElementById("launch-student").value, sim=document.getElementById("launch-test").value, s=state.students.find(x=>x.aluno_id===aluno);
+ if(!s){toast("Selecione um aluno");return}
+ const rec={Matrícula:s.aluno_id,Aluno:s.nome_aluno,Turma:s.turma,Simulado:"Simulado "+sim};
+ for(let i=1;i<=52;i++)rec["Q"+String(i).padStart(2,"0")]=state.draft["Q"+String(i).padStart(2,"0")]||"";
+ state.responses=state.responses.filter(r=>!(String(r.Matrícula)===String(s.aluno_id)&&String(r.Simulado)===("Simulado "+sim)));
+ state.responses.push(rec);persist();toast("Respostas salvas");clearDraft();showView("resultados");
+}
+function closeModal(){document.getElementById("modal").classList.remove("open")}
+document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()}
+function renderAll(){populateSelects();renderHome();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems()}
+renderAll();
+
+function showStudentDetail(studentId,simulado){
+ const s=state.students.find(x=>String(x.aluno_id)===String(studentId)); if(!s)return;
+ const rec=state.responses.find(r=>{
+   const st=findStudent(r.Aluno,r.Matrícula);
+   return st && String(st.aluno_id)===String(studentId) && (String(r.Simulado).replace(/\D/g,"")||"1")===String(simulado);
+ });
+ const box=document.getElementById("student-detail");
+ if(!rec){box.innerHTML='<div class="card">Não há lançamento para este aluno.</div>';box.classList.add("open");return}
+ const ans=answersOf(rec), cr=calcRecord(rec);
+ const cells=ans.map((a,i)=>{
+   const q=i+1,k=getKey(simulado,q), cls=!a?"blank":(a===k?"ok":"bad");
+   const sub=q<=26?"MAT":"PORT";
+   return `<div class="qcell ${cls}"><div class="qnum">${sub} Q${String(q).padStart(2,"0")}</div><div class="qans">${a||"—"}</div><div class="qkey">Gabarito: ${k||"—"}</div></div>`
+ }).join("");
+ box.innerHTML=`<div class="card">
+   <div class="detail-head"><div><div class="detail-title">${esc(s.nome_aluno)}</div><div class="muted">3ª ${s.turma} · Simulado ${simulado}</div></div><button class="btn" onclick="document.getElementById('student-detail').classList.remove('open')">Fechar</button></div>
+   <div class="detail-grid">
+    <div class="detail-stat"><div class="muted">Geral</div><div class="v">${cr.correct}/52</div><div>${pct(cr.percent)}</div></div>
+    <div class="detail-stat"><div class="muted">Matemática</div><div class="v">${cr.math.correct}/26</div><div>${pct(cr.math.percent)}</div></div>
+    <div class="detail-stat"><div class="muted">Português</div><div class="v">${cr.port.correct}/26</div><div>${pct(cr.port.percent)}</div></div>
+    <div class="detail-stat"><div class="muted">Em branco</div><div class="v">${cr.blank}</div><div>questões</div></div>
+   </div>
+   <h3>Questões — verde = acerto · vermelho = erro · cinza = em branco</h3>
+   <div class="question-grid">${cells}</div>
+ </div>`;
+ box.classList.add("open");
+ box.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function renderDashboard(){
+ const active=state.students.filter(s=>s.ativo!==false);
+ const results=state.responses.map(r=>({r,s:findStudent(r.Aluno,r.Matrícula),c:calcRecord(r)})).filter(x=>x.s&&x.c);
+ const el=id=>document.getElementById(id);
+ if(!el("dash-students"))return;
+ el("dash-students").textContent=active.length;
+ el("dash-results").textContent=results.length;
+ el("dash-average").textContent=results.length?pct(results.reduce((a,x)=>a+x.c.percent,0)/results.length):"—";
+ el("dash-correct").textContent=results.length?(results.reduce((a,x)=>a+x.c.correct,0)/results.length).toFixed(1)+"/52":"—";
+ el("dash-classes").innerHTML=classes.map(cl=>{
+   const a=results.filter(x=>x.s.turma===cl),avg=a.length?a.reduce((n,x)=>n+x.c.percent,0)/a.length:null;
+   return `<div class="mini-row"><b>3ª ${cl}</b><div class="mini-bar"><span style="width:${avg?avg*100:0}%"></span></div><b>${pct(avg)}</b></div>`;
+ }).join("");
+ el("dash-subjects").innerHTML=[["Matemática","math"],["Português","port"]].map(([l,k])=>{
+   const avg=results.length?results.reduce((n,x)=>n+x.c[k].percent,0)/results.length:null;
+   return `<div class="mini-row"><b>${l}</b><div class="mini-bar"><span style="width:${avg?avg*100:0}%"></span></div><b>${pct(avg)}</b></div>`;
+ }).join("");
+ const stats=Array.from({length:52},(_,i)=>({q:i+1,ok:0,n:0}));
+ results.forEach(x=>answersOf(x.r).forEach((a,i)=>{if(a&&a!=="NR"){stats[i].n++;if(a===getKey("1",i+1))stats[i].ok++}}));
+ el("dash-items").innerHTML=stats.filter(x=>x.n).sort((a,b)=>a.ok/a.n-b.ok/b.n).slice(0,8).map(x=>{
+   const p=x.ok/x.n;return `<div class="mini-row"><b>Q${String(x.q).padStart(2,"0")}</b><div class="mini-bar"><span style="width:${p*100}%"></span></div><b>${Math.round(p*100)}%</b></div>`;
+ }).join("")||'<div class="empty">Ainda não há dados.</div>';
+ el("dash-difficulty").innerHTML=["Fácil","Médio","Difícil"].map(d=>{
+   let ok=0,n=0;results.forEach(x=>["math","port"].forEach(k=>{ok+=x.c[k].byDiff[d].correct;n+=x.c[k].byDiff[d].total}));
+   return `<div class="mini-row"><b>${d}</b><div class="mini-bar"><span style="width:${n?ok/n*100:0}%"></span></div><b>${n?pct(ok/n):"—"}</b></div>`;
+ }).join("");
+}
+</script>
+<script>document.addEventListener("DOMContentLoaded",()=>{try{renderDashboard()}catch(e){console.error(e)}});</script><div id="v5-badge" style="position:fixed;right:10px;bottom:76px;font-size:10px;opacity:.45;z-index:90">SPAECE 2026 · V5</div></body>
+</html>
