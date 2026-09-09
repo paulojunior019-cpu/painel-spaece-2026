@@ -85,6 +85,25 @@ table{min-width:760px}
 @media(max-width:800px){.scan-list{grid-template-columns:1fr 1fr}.scan-answer-grid{grid-template-columns:repeat(8,1fr)}}
 @media(max-width:500px){.scan-list{grid-template-columns:1fr}.scan-answer-grid{grid-template-columns:repeat(6,1fr)}}
 </style>
+
+<style>
+/* Ajuste de encaixe para notebooks em 100% de zoom */
+.main{padding:22px 24px;}
+.main .grid[style*="grid-template-columns:1.2fr .8fr"]{grid-template-columns:minmax(0,1fr) minmax(360px,390px)!important;}
+.main .grid[style*="grid-template-columns:1.2fr .8fr"]>*{min-width:0;}
+.table-wrap{max-width:100%;}
+.table-wrap table{min-width:680px;}
+@media (min-width:901px) and (max-width:1250px){
+  .side{width:215px;padding-left:10px;padding-right:10px;}
+  .main{padding:18px;}
+  .main .grid[style*="grid-template-columns:1.2fr .8fr"]{grid-template-columns:minmax(0,1fr) minmax(320px,360px)!important;}
+  .title{font-size:27px;}
+}
+@media (min-width:1251px){
+  .side{width:220px;}
+  .main{padding:22px;}
+}
+</style>
 </head>
 <body>
 <div class="app">
