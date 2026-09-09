@@ -148,7 +148,7 @@ table{min-width:760px}
     <div class="card section"><h2>Resumo das turmas</h2><div id="home-classes" class="grid class-grid"></div></div>
     <div class="grid" style="grid-template-columns:1.2fr .8fr;margin-top:18px">
       <div class="card"><h2>Últimos resultados</h2><div id="home-results"></div></div>
-      <div class="card"><h2>Estado da TRI</h2><div class="notice">A matriz de respostas está estruturada. A TRI não será inventada: os parâmetros dos itens deverão ser calibrados posteriormente.</div><p class="muted" style="margin-top:12px">Fácil/Médio/Difícil é classificação pedagógica, não é o parâmetro <b>b</b> da TRI.</p></div>
+      <div class="card"><h2>Estado da TRI</h2><div class="notice"><b>Proficiência estimada:</b> o painel calcula uma estimativa em escala de 0 a 500 usando os pesos pedagógicos das questões. Isso <b>não é a TRI oficial do SPAECE</b>; para TRI real seriam necessários parâmetros calibrados dos itens.</div><p class="muted" style="margin-top:12px">Fácil/Médio/Difícil é classificação pedagógica, não é o parâmetro <b>b</b> da TRI.</p></div>
     </div>
   </div>
 
@@ -158,6 +158,7 @@ table{min-width:760px}
       <div class="kpi-card"><div class="label">Alunos cadastrados</div><div class="value" id="dash-students">—</div></div>
       <div class="kpi-card"><div class="label">Resultados corrigidos</div><div class="value" id="dash-results">—</div></div>
       <div class="kpi-card"><div class="label">Média geral</div><div class="value" id="dash-average">—</div></div>
+      <div class="kpi-card"><div class="label">Proficiência estimada</div><div class="value" id="dash-proficiency">—</div></div>
       <div class="kpi-card"><div class="label">Acertos médios</div><div class="value" id="dash-correct">—</div></div>
     </div>
     <div class="analysis-grid" style="margin-top:16px"><div class="card"><h2>Desempenho por turma</h2><div id="dash-classes"></div></div><div class="card"><h2>Desempenho por disciplina</h2><div id="dash-subjects"></div></div></div>
@@ -265,6 +266,7 @@ function persist(){localStorage.setItem("spaece_students",JSON.stringify(state.s
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function toast(s){const t=document.getElementById("toast");t.textContent=s;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
 function pct(n){return n==null?"—":(n*100).toFixed(1)+"%"}
+function profFmt(n){return n==null?"—":n.toFixed(1)}
 function answersOf(r){return Array.from({length:52},(_,i)=>r["Q"+String(i+1).padStart(2,"0")]||"")}
 function getKey(test,q){return state.keys[test+"-"+q]||""}
 function calcRecord(rec){
@@ -284,6 +286,24 @@ function calcRecord(rec){
  if(!hasKey)return null;
  result.total=52; result.correct=result.math.correct+result.port.correct; result.blank=result.math.blank+result.port.blank;
  result.percent=result.correct/52; result.math.percent=result.math.correct/26; result.port.percent=result.port.correct/26;
+ // Proficiência estimada: aplicação dos pesos pedagógicos F=4, M=2, D=1.
+ // O fator das questões fáceis é 1,0 quando todas as fáceis são acertadas e 0,9 caso contrário.
+ function prof(subject, from, to){
+   let easyTotal=0, easyCorrect=0, points=0, max=0;
+   for(let i=from;i<to;i++){
+     const d=difficulties[i], a=answers[i], k=keys[i];
+     const w=d==='Fácil'?4:d==='Médio'?2:1;
+     max+=w;
+     if(d==='Fácil'){easyTotal++; if(a&&k&&a===k)easyCorrect++;}
+     if(a&&k&&a===k)points+=w;
+   }
+   const factor=(easyTotal>0 && easyCorrect===easyTotal)?1:0.9;
+   const weighted=points * factor;
+   return {score: max ? (weighted/max)*500 : null, points:weighted, maxPoints:max, easyCorrect, easyTotal, factor};
+ }
+ result.math.proficiencia=prof('math',0,26);
+ result.port.proficiencia=prof('port',26,52);
+ result.proficiencia=(result.math.proficiencia.score!=null&&result.port.proficiencia.score!=null)?(result.math.proficiencia.score+result.port.proficiencia.score)/2:null;
  return result;
 }
 const descriptorMeta = [
@@ -420,15 +440,17 @@ function renderResults(){
  const total=rows.length;
  document.getElementById("results-table").innerHTML=total?`
  <div class="muted" style="margin:8px 0 10px">${total} resultado(s) encontrado(s)</div>
- <div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Total</th><th>Geral</th><th>Ação</th></tr></thead><tbody>
+ <div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Prof. Mat.</th><th>Port.</th><th>Prof. Port.</th><th>Total</th><th>Prof. geral</th><th>Ação</th></tr></thead><tbody>
  ${rows.sort((a,b)=>b.cr.percent-a.cr.percent).map(x=>{
    return `<tr>
     <td><b>${esc(x.s.nome_aluno)}</b><div class="muted">Matrícula ${esc(x.s.aluno_id)}</div></td>
     <td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td>
     <td>${subject==="Português"?"—":`${x.cr.math.correct}/26<br><span class="muted">${pct(x.cr.math.percent)}</span>`}</td>
+    <td>${subject==="Português"?"—":`<b>${profFmt(x.cr.math.proficiencia.score)}</b>`}</td>
     <td>${subject==="Matemática"?"—":`${x.cr.port.correct}/26<br><span class="muted">${pct(x.cr.port.percent)}</span>`}</td>
+    <td>${subject==="Matemática"?"—":`<b>${profFmt(x.cr.port.proficiencia.score)}</b>`}</td>
     <td><b>${x.cr.correct}/52</b><br><span class="muted">${x.cr.blank} em branco</span></td>
-    <td><b>${pct(x.cr.percent)}</b></td>
+    <td><b>${profFmt(x.cr.proficiencia)}</b><br><span class="muted">${pct(x.cr.percent)}</span></td>
     <td><div style="display:flex;gap:6px;flex-wrap:wrap">
       <button class="btn small primary" onclick="showStudentDetail('${x.s.aluno_id}','${x.sim}')">Ver detalhes</button>
       <button class="btn small danger" onclick="deleteResponse('${x.s.aluno_id}','${x.sim}')">Apagar</button>
@@ -535,9 +557,9 @@ function showStudentDetail(studentId,simulado){
      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn danger" onclick="deleteResponse('${s.aluno_id}','${simulado}')">Apagar lançamento</button><button class="btn" onclick="document.getElementById('student-detail').classList.remove('open')">Fechar</button></div>
    </div>
    <div class="detail-grid">
-    <div class="detail-stat"><div class="muted">Geral</div><div class="v">${cr.correct}/52</div><div>${pct(cr.percent)}</div></div>
-    <div class="detail-stat"><div class="muted">Matemática</div><div class="v">${cr.math.correct}/26</div><div>${pct(cr.math.percent)}</div></div>
-    <div class="detail-stat"><div class="muted">Português</div><div class="v">${cr.port.correct}/26</div><div>${pct(cr.port.percent)}</div></div>
+    <div class="detail-stat"><div class="muted">Geral</div><div class="v">${cr.correct}/52</div><div>${pct(cr.percent)} · Prof. ${profFmt(cr.proficiencia)}</div></div>
+    <div class="detail-stat"><div class="muted">Matemática</div><div class="v">${cr.math.correct}/26</div><div>${pct(cr.math.percent)} · Prof. ${profFmt(cr.math.proficiencia.score)}</div></div>
+    <div class="detail-stat"><div class="muted">Português</div><div class="v">${cr.port.correct}/26</div><div>${pct(cr.port.percent)} · Prof. ${profFmt(cr.port.proficiencia.score)}</div></div>
     <div class="detail-stat"><div class="muted">Em branco</div><div class="v">${cr.blank}</div><div>questões</div></div>
    </div>
    <div class="notice" style="margin-bottom:14px"><b>Legenda:</b> verde = acerto · vermelho = erro · cinza = em branco · amarelo = sem gabarito. Em cada questão aparecem a resposta marcada e o gabarito.</div>
@@ -557,6 +579,7 @@ function renderDashboard(){
  el("dash-students").textContent=active.length;
  el("dash-results").textContent=results.length;
  el("dash-average").textContent=results.length?pct(results.reduce((a,x)=>a+x.c.percent,0)/results.length):"—";
+ el("dash-proficiency").textContent=results.length?profFmt(results.reduce((a,x)=>a+(x.c.proficiencia||0),0)/results.length):"—";
  el("dash-correct").textContent=results.length?(results.reduce((a,x)=>a+x.c.correct,0)/results.length).toFixed(1)+"/52":"—";
  el("dash-classes").innerHTML=classes.map(cl=>{
    const a=results.filter(x=>x.s.turma===cl),avg=a.length?a.reduce((n,x)=>n+x.c.percent,0)/a.length:null;
@@ -950,7 +973,7 @@ function renderReportPreview(){
  const avg=rows.reduce((a,x)=>a+x.c.percent,0)/rows.length;
  const m=rows.reduce((a,x)=>a+x.c.math.percent,0)/rows.length,p=rows.reduce((a,x)=>a+x.c.port.percent,0)/rows.length;
  const byClass=classes.map(cl=>{const a=rows.filter(x=>x.s.turma===cl);return {cl,n:a.length,avg:a.length?a.reduce((z,x)=>z+x.c.percent,0)/a.length:null}}).filter(x=>x.n);
- box.innerHTML=`<div id="printable-report"><h2 style="margin-top:0">${esc(title)}</h2><p class="muted">Gerado em ${new Date().toLocaleString("pt-BR")}</p><div class="detail-grid"><div class="detail-stat"><div class="muted">Resultados</div><div class="v">${rows.length}</div></div><div class="detail-stat"><div class="muted">Média geral</div><div class="v">${pct(avg)}</div></div><div class="detail-stat"><div class="muted">Matemática</div><div class="v">${pct(m)}</div></div><div class="detail-stat"><div class="muted">Português</div><div class="v">${pct(p)}</div></div></div><h3>Desempenho</h3><div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Geral</th></tr></thead><tbody>${rows.sort((a,b)=>b.c.percent-a.c.percent).map(x=>`<tr><td>${esc(x.s.nome_aluno)}</td><td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td><td>${pct(x.c.math.percent)}</td><td>${pct(x.c.port.percent)}</td><td><b>${pct(x.c.percent)}</b></td></tr>`).join("")}</tbody></table></div>${byClass.length>1?`<h3 style="margin-top:18px">Média por turma</h3><div class="table-wrap"><table><thead><tr><th>Turma</th><th>Resultados</th><th>Média</th></tr></thead><tbody>${byClass.map(x=>`<tr><td>3ª ${x.cl}</td><td>${x.n}</td><td>${pct(x.avg)}</td></tr>`).join("")}</tbody></table></div>`:""}</div>`;
+ box.innerHTML=`<div id="printable-report"><h2 style="margin-top:0">${esc(title)}</h2><p class="muted">Gerado em ${new Date().toLocaleString("pt-BR")}</p><div class="detail-grid"><div class="detail-stat"><div class="muted">Resultados</div><div class="v">${rows.length}</div></div><div class="detail-stat"><div class="muted">Média geral</div><div class="v">${pct(avg)}</div></div><div class="detail-stat"><div class="muted">Matemática</div><div class="v">${pct(m)}</div></div><div class="detail-stat"><div class="muted">Português</div><div class="v">${pct(p)}</div></div></div><h3>Desempenho</h3><div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Prof. Mat.</th><th>Port.</th><th>Prof. Port.</th><th>Prof. geral</th></tr></thead><tbody>${rows.sort((a,b)=>b.c.percent-a.c.percent).map(x=>`<tr><td>${esc(x.s.nome_aluno)}</td><td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td><td>${pct(x.c.math.percent)}</td><td>${profFmt(x.c.math.proficiencia.score)}</td><td>${pct(x.c.port.percent)}</td><td>${profFmt(x.c.port.proficiencia.score)}</td><td><b>${profFmt(x.c.proficiencia)}</b></td></tr>`).join("")}</tbody></table></div>${byClass.length>1?`<h3 style="margin-top:18px">Média por turma</h3><div class="table-wrap"><table><thead><tr><th>Turma</th><th>Resultados</th><th>Média</th></tr></thead><tbody>${byClass.map(x=>`<tr><td>3ª ${x.cl}</td><td>${x.n}</td><td>${pct(x.avg)}</td></tr>`).join("")}</tbody></table></div>`:""}</div>`;
 }
 function printReport(){
  const content=document.getElementById("printable-report")?.innerHTML;if(!content){toast("Não há dados para imprimir");return}
