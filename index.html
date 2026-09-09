@@ -42,11 +42,12 @@ button,input,select{font:inherit}.app{min-height:100vh;display:flex}.side{width:
 /* V5 — mobile/web */
 *{box-sizing:border-box}
 html{font-size:16px;-webkit-text-size-adjust:100%}
-body{min-width:0;overflow-x:hidden}
+body{min-width:0;overflow-x:hidden} .app{width:100%;min-width:0} .main{width:100%;max-width:none;overflow:hidden} .view{width:100%;min-width:0}
 button,input,select,textarea{font:inherit}
 button{touch-action:manipulation}
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{min-width:760px}
+@media(max-width:1100px){.main .grid[style*="grid-template-columns:1.2fr .8fr"]{grid-template-columns:1fr!important}}
 @media(max-width:700px){
   body{padding-bottom:72px}
   .sidebar{width:100%;position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:100;border-right:0;border-top:1px solid var(--line);padding:6px;display:flex;overflow-x:auto;background:#fff}
@@ -103,24 +104,7 @@ table{min-width:760px}
   </nav>
 </aside>
 
-<section id="page-analysis" class="page">
-  <div class="page-head">
-    <div><h1>Análise das 52 questões</h1><p class="muted">Identifique rapidamente quais itens precisam de intervenção pedagógica.</p></div>
-  </div>
-  <div class="card">
-    <div class="analysis-toolbar">
-      <select id="analysis-class"><option value="">Todas as turmas</option><option value="A">3ª A</option><option value="B">3ª B</option><option value="C">3ª C</option><option value="D">3ª D</option><option value="E">3ª E</option><option value="F">3ª F</option></select>
-      <select id="analysis-subject"><option value="">Matemática + Português</option><option value="Matemática">Matemática</option><option value="Português">Português</option></select>
-      <select id="analysis-level"><option value="">Todas</option><option value="Crítica">Crítica</option><option value="Atenção">Atenção</option><option value="Bom domínio">Bom domínio</option></select>
-      <button class="btn" onclick="renderItemAnalysis()">Atualizar</button>
-      <button class="btn export-btn" onclick="exportItemAnalysis()">Exportar CSV</button>
-    </div>
-    <div id="analysis-summary"></div>
-    <div class="table-wrap">
-      <table class="item-table" id="item-analysis-table"></table>
-    </div>
-  </div>
-</section>
+
 <main class="main">
   <div id="view-home" class="view active">
     <div class="top"><div><div class="eyebrow">Dashboard</div><div class="title">Desempenho SPAECE 2026</div><p class="subtitle">Sistema local funcional para alunos, respostas, resultados e evolução.</p></div><button class="btn primary" onclick="openLaunch()">+ Lançar resultado</button></div>
