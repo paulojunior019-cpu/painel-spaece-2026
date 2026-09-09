@@ -425,7 +425,7 @@ function saveLaunch(){
 }
 function closeModal(){document.getElementById("modal").classList.remove("open")}
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()}
-function renderAll(){populateSelects();renderHome();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems()}
+function renderAll(){populateSelects();initResultFilterEvents();renderHome();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems()}
 renderAll();
 
 function showStudentDetail(studentId,simulado){
