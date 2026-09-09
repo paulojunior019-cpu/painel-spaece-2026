@@ -198,7 +198,7 @@ table{min-width:760px}
 
   <div id="view-resultados" class="view">
     <div class="top"><div><div class="eyebrow">Análise</div><div class="title">Resultados</div><p class="subtitle">Resultados corrigidos quando houver gabarito cadastrado.</p></div></div>
-    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="res-class" class="select" onchange="renderResults()"><option value="">Todas</option></select></div><div class="field"><label>Aluno</label><select id="res-student" class="select" onchange="renderResults()"><option value="">Todos os alunos</option></select></div><div class="field"><label>Disciplina</label><select id="res-subject" class="select" onchange="renderResults()"><option value="">Todas</option><option>Matemática</option><option>Português</option></select></div><div class="field"><label>Simulado</label><select id="res-test" class="select" onchange="renderResults()"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div>
+    <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="res-class" class="select"><option value="">Todas</option></select></div><div class="field"><label>Aluno</label><select id="res-student" class="select"><option value="">Todos os alunos</option></select></div><div class="field"><label>Disciplina</label><select id="res-subject" class="select"><option value="">Todas</option><option value="Matemática">Matemática</option><option value="Português">Português</option></select></div><div class="field"><label>Simulado</label><select id="res-test" class="select"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div><div class="form-actions" style="margin-top:0;display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" onclick="applyResultFilters()">Filtrar resultados</button><button class="btn" type="button" onclick="clearResultFilters()">Limpar filtros</button></div>
 <div class="notice" style="margin-bottom:0"><b>Consulta individual:</b> escolha um aluno para ver rapidamente onde ele acertou, errou ou deixou em branco. Clique em <b>Ver detalhes</b>.</div>
 <section id="page-dashboard" class="page">
 <div class="page-head"><div><h1>Dashboard de Gestão</h1><p class="muted">Visão geral do desempenho do Simulado 1.</p></div></div>
@@ -323,9 +323,15 @@ function renderStudents(){
 }
 function renderTests(){document.getElementById("tests-grid").innerHTML=[1,2,3].map(n=>{const count=Object.keys(state.keys).filter(k=>k.startsWith(n+"-")&&state.keys[k]).length;const rs=state.responses.filter(r=>String(r.Simulado).includes(String(n))).length;return `<div class="card"><h3 style="margin:0;color:var(--green)">Simulado ${n}</h3><p>${count}/52 gabaritos cadastrados</p><p>${rs} lançamento(s)</p><button class="btn primary" onclick="openItemsFor(${n})">Gerenciar questões</button></div>`}).join("")}
 function openItemsFor(n){showView("itens");document.getElementById("item-test").value=n;renderItems()}
+function applyResultFilters(){ renderResults(); toast("Filtros aplicados"); }
+function clearResultFilters(){
+ ["res-class","res-student","res-subject","res-test"].forEach(id=>{const el=document.getElementById(id); if(el) el.value="";});
+ renderResults();
+}
 function renderResults(){
  const c=document.getElementById("res-class").value, test=document.getElementById("res-test").value;
  const studentId=document.getElementById("res-student")?.value||"";
+ const subject=document.getElementById("res-subject")?.value||"";
  const rows=[];
  state.responses.forEach(r=>{
    const s=findStudent(r.Aluno,r.Matrícula), cr=calcRecord(r); if(!s||!cr)return;
@@ -341,8 +347,8 @@ function renderResults(){
    return `<tr>
     <td><b>${esc(x.s.nome_aluno)}</b><div class="muted">Matrícula ${esc(x.s.aluno_id)}</div></td>
     <td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td>
-    <td>${x.cr.math.correct}/26<br><span class="muted">${pct(x.cr.math.percent)}</span></td>
-    <td>${x.cr.port.correct}/26<br><span class="muted">${pct(x.cr.port.percent)}</span></td>
+    <td>${subject==="Português"?"—":`${x.cr.math.correct}/26<br><span class="muted">${pct(x.cr.math.percent)}</span>`}</td>
+    <td>${subject==="Matemática"?"—":`${x.cr.port.correct}/26<br><span class="muted">${pct(x.cr.port.percent)}</span>`}</td>
     <td><b>${x.cr.correct}/52</b><br><span class="muted">${x.cr.blank} em branco</span></td>
     <td><b>${pct(x.cr.percent)}</b></td>
     <td><div style="display:flex;gap:6px;flex-wrap:wrap">
