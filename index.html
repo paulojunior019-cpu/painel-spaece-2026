@@ -69,6 +69,16 @@ table{min-width:760px}
   .question-grid{grid-template-columns:repeat(3,1fr)}
   .page-head h1{font-size:21px}
 }
+
+.analysis-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.analysis-toolbar select{min-width:170px}
+.item-table td,.item-table th{white-space:nowrap}
+.status-critical{font-weight:800}
+.status-attention{font-weight:800}
+.status-good{font-weight:800}
+.item-detail{font-size:12px;color:#777}
+.export-btn{margin-left:auto}
+@media(max-width:700px){.analysis-toolbar>*{width:100%}.export-btn{margin-left:0}.item-table{min-width:820px}}
 </style>
 </head>
 <body>
@@ -87,6 +97,25 @@ table{min-width:760px}
     <button data-view="itens">Banco de itens</button>
   </nav>
 </aside>
+
+<section id="page-analysis" class="page">
+  <div class="page-head">
+    <div><h1>Análise das 52 questões</h1><p class="muted">Identifique rapidamente quais itens precisam de intervenção pedagógica.</p></div>
+  </div>
+  <div class="card">
+    <div class="analysis-toolbar">
+      <select id="analysis-class"><option value="">Todas as turmas</option><option value="A">3ª A</option><option value="B">3ª B</option><option value="C">3ª C</option><option value="D">3ª D</option><option value="E">3ª E</option><option value="F">3ª F</option></select>
+      <select id="analysis-subject"><option value="">Matemática + Português</option><option value="Matemática">Matemática</option><option value="Português">Português</option></select>
+      <select id="analysis-level"><option value="">Todas</option><option value="Crítica">Crítica</option><option value="Atenção">Atenção</option><option value="Bom domínio">Bom domínio</option></select>
+      <button class="btn" onclick="renderItemAnalysis()">Atualizar</button>
+      <button class="btn export-btn" onclick="exportItemAnalysis()">Exportar CSV</button>
+    </div>
+    <div id="analysis-summary"></div>
+    <div class="table-wrap">
+      <table class="item-table" id="item-analysis-table"></table>
+    </div>
+  </div>
+</section>
 <main class="main">
   <div id="view-home" class="view active">
     <div class="top"><div><div class="eyebrow">Dashboard</div><div class="title">Desempenho SPAECE 2026</div><p class="subtitle">Sistema local funcional para alunos, respostas, resultados e evolução.</p></div><button class="btn primary" onclick="openLaunch()">+ Lançar resultado</button></div>
@@ -355,6 +384,50 @@ function renderDashboard(){
    return `<div class="mini-row"><b>${d}</b><div class="mini-bar"><span style="width:${n?ok/n*100:0}%"></span></div><b>${n?pct(ok/n):"—"}</b></div>`;
  }).join("");
 }
+
+function itemAnalysisRows(){
+ const cls=document.getElementById("analysis-class")?.value||"";
+ const subj=document.getElementById("analysis-subject")?.value||"";
+ const level=document.getElementById("analysis-level")?.value||"";
+ const rows=[];
+ for(let i=0;i<52;i++){
+   const q=i+1, subject=q<=26?"Matemática":"Português";
+   if(subj&&subj!==subject)continue;
+   const stats={q,subject,diff:difficulties[i],answered:0,correct:0};
+   state.responses.forEach(r=>{
+     const s=findStudent(r.Aluno,r.Matrícula), sim=String(r.Simulado||"1").replace(/\D/g,"")||"1";
+     if(!s||sim!=="1"||(cls&&s.turma!==cls))return;
+     const a=answersOf(r)[i], k=getKey("1",q);
+     if(a&&a!=="NR"){stats.answered++;if(a===k)stats.correct++}
+   });
+   const pctv=stats.answered?stats.correct/stats.answered:null;
+   const status=pctv===null?"Sem dados":pctv<.50?"Crítica":pctv<.70?"Atenção":"Bom domínio";
+   if(level&&level!==status)continue;
+   rows.push({...stats,pct:pctv,status});
+ }
+ return rows;
+}
+function renderItemAnalysis(){
+ const rows=itemAnalysisRows(), el=document.getElementById("item-analysis-table"), sum=document.getElementById("analysis-summary");
+ const valid=rows.filter(x=>x.answered);
+ const critical=valid.filter(x=>x.status==="Crítica").length, attention=valid.filter(x=>x.status==="Atenção").length, good=valid.filter(x=>x.status==="Bom domínio").length;
+ sum.innerHTML=`<div class="detail-grid">
+   <div class="detail-stat"><div class="muted">Questões analisadas</div><div class="v">${valid.length}/52</div></div>
+   <div class="detail-stat"><div class="muted">Críticas</div><div class="v">${critical}</div></div>
+   <div class="detail-stat"><div class="muted">Atenção</div><div class="v">${attention}</div></div>
+   <div class="detail-stat"><div class="muted">Bom domínio</div><div class="v">${good}</div></div>
+ </div>`;
+ el.innerHTML=`<thead><tr><th>Questão</th><th>Disciplina</th><th>Dificuldade</th><th>Respondidas</th><th>Acertos</th><th>% acertos</th><th>Classificação</th></tr></thead><tbody>${
+ rows.sort((a,b)=>(a.pct??-1)-(b.pct??-1)).map(x=>`<tr>
+ <td><b>Q${String(x.q).padStart(2,"0")}</b></td><td>${x.subject}</td><td>${x.diff}</td><td>${x.answered}</td><td>${x.correct}</td><td><b>${x.pct===null?"—":pct(x.pct)}</b></td><td>${x.status}</td></tr>`).join("")
+ }</tbody>`;
+}
+function exportItemAnalysis(){
+ const rows=itemAnalysisRows(), lines=[["Questão","Disciplina","Dificuldade","Respondidas","Acertos","Percentual","Classificação"].join(";")];
+ rows.forEach(x=>lines.push([`Q${String(x.q).padStart(2,"0")}`,x.subject,x.diff,x.answered,x.correct,x.pct===null?"":(x.pct*100).toFixed(1)+"%",x.status].join(";")));
+ const blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="analise_spaece_2026.csv";a.click();URL.revokeObjectURL(a.href);
+}
 </script>
-<script>document.addEventListener("DOMContentLoaded",()=>{try{renderDashboard()}catch(e){console.error(e)}});</script><div id="v5-badge" style="position:fixed;right:10px;bottom:76px;font-size:10px;opacity:.45;z-index:90">SPAECE 2026 · V5</div></body>
+<script>document.addEventListener("DOMContentLoaded",()=>{try{renderDashboard()}catch(e){console.error(e)}});</script><div id="v5-badge" style="position:fixed;right:10px;bottom:76px;font-size:10px;opacity:.45;z-index:90">SPAECE 2026 · V5</div><script>document.addEventListener("DOMContentLoaded",()=>{try{renderItemAnalysis()}catch(e){console.error(e)}});</script></body>
 </html>
