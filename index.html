@@ -79,6 +79,10 @@ table{min-width:760px}
 .item-detail{font-size:12px;color:#777}
 .export-btn{margin-left:auto}
 @media(max-width:700px){.analysis-toolbar>*{width:100%}.export-btn{margin-left:0}.item-table{min-width:820px}}
+
+.scan-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.scan-label{display:inline-flex;align-items:center;justify-content:center}.scan-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.scan-thumb{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.scan-thumb img{width:100%;aspect-ratio:595/842;object-fit:cover;border-radius:8px}.scan-thumb .scan-name{font-size:12px;font-weight:700;margin-top:7px;word-break:break-word}.scan-results{display:grid;gap:12px;margin-top:18px}.scan-result{border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:15px}.scan-result.ok{border-color:#7bb88a}.scan-result.warn{border-color:#d7b66a}.scan-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.scan-answer-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin-top:12px}.scan-answer{border:1px solid var(--line);border-radius:7px;text-align:center;padding:5px 2px;font-size:11px;background:#fff}.scan-answer.ok{background:#e8f5eb;border-color:#75ae80}.scan-answer.bad{background:#fff0ef;border-color:#d38b85}.scan-answer.amb{background:#fff5d8;border-color:#d6b35b}.scan-answer.blank{background:#f3f3f3}.scan-meter{height:8px;background:#eee;border-radius:9px;overflow:hidden;margin-top:7px}.scan-meter span{display:block;height:100%;background:var(--gold)}
+@media(max-width:800px){.scan-list{grid-template-columns:1fr 1fr}.scan-answer-grid{grid-template-columns:repeat(8,1fr)}}
+@media(max-width:500px){.scan-list{grid-template-columns:1fr}.scan-answer-grid{grid-template-columns:repeat(6,1fr)}}
 </style>
 </head>
 <body>
@@ -91,6 +95,7 @@ table{min-width:760px}
     <button data-view="alunos">Alunos</button>
     <button data-view="simulados">Simulados</button>
     <button data-view="lancar">Lançar resultado</button>
+    <button data-view="correcao">Correção automática</button>
     <button data-view="resultados">Resultados</button>
     <button data-view="evolucao">Evolução</button>
     <button data-view="ranking">Ranking</button>
@@ -154,6 +159,22 @@ table{min-width:760px}
       <div class="field"><label>Aluno</label><select id="launch-student" class="select"></select></div>
       <div class="field"><label>Simulado</label><select id="launch-test" class="select"><option value="1">Simulado 1</option><option value="2">Simulado 2</option><option value="3">Simulado 3</option></select></div>
     </div><div class="notice" style="margin:14px 0">O Simulado 1 possui um gabarito de trabalho e os resultados serão corrigidos automaticamente. Os gabaritos dos Simulados 2 e 3 podem ser cadastrados no Banco de Itens.</div><div id="answer-grid" class="answer-grid"></div><div class="form-actions"><button class="btn" onclick="clearDraft()">Limpar</button><button class="btn primary" onclick="saveLaunch()">Salvar respostas</button></div></div>
+  </div>
+
+  <div id="view-correcao" class="view">
+    <div class="top"><div><div class="eyebrow">Automação</div><div class="title">Correção automática</div><p class="subtitle">Envie as folhas escaneadas. O sistema identifica as alternativas marcadas e tenta reconhecer o nome do aluno.</p></div></div>
+    <div class="card">
+      <div class="notice"><b>Como usar:</b> escaneie cada folha inteira em modo documento, com boa iluminação e sem cortar o cartão-resposta. O modelo atual foi calibrado para o cartão do <b>1º Simulado SPAECE 2026</b> da E.E.M. Frei Policarpo.</div>
+      <div class="scan-actions">
+        <label class="btn primary scan-label">📷 Escanear com câmera<input id="scan-camera" type="file" accept="image/*" capture="environment" hidden></label>
+        <label class="btn scan-label">Selecionar imagens<input id="scan-files" type="file" accept="image/*,application/pdf" multiple hidden></label>
+        <button class="btn" onclick="clearScanQueue()">Limpar fila</button>
+      </div>
+      <div id="scan-status" class="muted" style="margin-top:12px">Nenhuma folha selecionada.</div>
+      <div id="scan-list" class="scan-list"></div>
+      <div class="form-actions"><button id="scan-process" class="btn primary" onclick="processScanQueue()" disabled>Processar folhas</button></div>
+    </div>
+    <div id="scan-results" class="scan-results"></div>
   </div>
 
   <div id="view-resultados" class="view">
@@ -429,5 +450,77 @@ function exportItemAnalysis(){
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="analise_spaece_2026.csv";a.click();URL.revokeObjectURL(a.href);
 }
 </script>
-<script>document.addEventListener("DOMContentLoaded",()=>{try{renderDashboard()}catch(e){console.error(e)}});</script><div id="v5-badge" style="position:fixed;right:10px;bottom:76px;font-size:10px;opacity:.45;z-index:90">SPAECE 2026 · V5</div><script>document.addEventListener("DOMContentLoaded",()=>{try{renderItemAnalysis()}catch(e){console.error(e)}});</script></body>
+<script>document.addEventListener("DOMContentLoaded",()=>{try{renderDashboard()}catch(e){console.error(e)}});</script><div id="v5-badge" style="position:fixed;right:10px;bottom:76px;font-size:10px;opacity:.45;z-index:90">SPAECE 2026 · V7</div><script>document.addEventListener("DOMContentLoaded",()=>{try{renderItemAnalysis()}catch(e){console.error(e)}});
+/* V7 — leitura automática do cartão-resposta */
+const SCAN_W=595, SCAN_H=842;
+const BUBBLE_X=[45.7,59,73,86.5,100.8,152,167.2,181.8,196,210,266,280.9,296,311.5,326.2,384,400,416,430,446.2].map(x=>65+x);
+const BUBBLE_Y=[34.1,49.3,64,78.2,93.4,108,122.2,137,151.9,166,180.6,195.3,209.8].map(y=>545+y);
+const SCAN_GROUP_RANGES=[[90,180],[200,290],[315,405],[440,525]];
+let scanQueue=[];
+function addScanFiles(files){
+  [...files].forEach(file=>{if(!file.type.startsWith('image/')&&!file.type.includes('pdf'))return; const url=URL.createObjectURL(file); scanQueue.push({file,url,name:file.name,status:'aguardando'});});
+  renderScanQueue();
+}
+function renderScanQueue(){
+  const list=document.getElementById('scan-list'), status=document.getElementById('scan-status'), btn=document.getElementById('scan-process');
+  if(!list)return; list.innerHTML=scanQueue.map((x,i)=>`<div class="scan-thumb"><img src="${x.url}" alt="Folha ${i+1}"><div class="scan-name">${i+1}. ${esc(x.name)}</div><div class="muted">${x.status}</div></div>`).join('');
+  status.textContent=scanQueue.length?`${scanQueue.length} folha(s) na fila.`:'Nenhuma folha selecionada.'; btn.disabled=!scanQueue.length;
+}
+function clearScanQueue(){scanQueue.forEach(x=>URL.revokeObjectURL(x.url));scanQueue=[];document.getElementById('scan-results').innerHTML='';renderScanQueue();}
+async function loadPdfJs(){if(window.pdfjsLib)return;await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc)});pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'}
+async function pdfToCanvases(file){await loadPdfJs();const data=await file.arrayBuffer();const pdf=await pdfjsLib.getDocument({data}).promise;const pages=[];for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const vp=page.getViewport({scale:1.5});const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);await page.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;pages.push(c)}return pages}
+function loadImage(url){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=url})}
+function makeCanvas(img){const c=document.createElement('canvas');c.width=SCAN_W;c.height=SCAN_H;const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,SCAN_W,SCAN_H);
+  const srcRatio=img.width/img.height,target=SCAN_W/SCAN_H; let sw=img.width,sh=img.height,sx=0,sy=0;
+  if(Math.abs(srcRatio-target)>0.035){if(srcRatio>target){sw=img.height*target;sx=(img.width-sw)/2}else{sh=img.width/target;sy=(img.height-sh)/2}}
+  ctx.drawImage(img,sx,sy,sw,sh,0,0,SCAN_W,SCAN_H); return c}
+function sampleBubble(ctx,x,y){const r=4;const d=ctx.getImageData(Math.max(0,x-r),Math.max(0,y-r),r*2+1,r*2+1).data;let sum=0,n=0;for(let i=0;i<d.length;i+=4){sum+=(d[i]+d[i+1]+d[i+2])/3;n++}return sum/n}
+function cluster1D(vals,gap){const a=[...vals].sort((x,y)=>x-y),out=[];for(const v of a){if(!out.length||v-out[out.length-1][out[out.length-1].length-1]>gap)out.push([v]);else out[out.length-1].push(v)}return out.map(g=>g.reduce((a,b)=>a+b,0)/g.length)}
+function detectBubbleGrid(canvas){
+  if(!window.cv||!cv.HoughCircles)return null;
+  let src=null,gray=null,roi=null,circles=null;
+  try{
+    src=cv.imread(canvas); gray=new cv.Mat(); cv.cvtColor(src,gray,cv.COLOR_RGBA2GRAY);
+    roi=gray.roi(new cv.Rect(65,545,500,225)); circles=new cv.Mat();
+    cv.HoughCircles(roi,circles,cv.HOUGH_GRADIENT,1,6,80,12,3,7);
+    const pts=[];for(let i=0;i<circles.cols;i++){const x=circles.data32F[i*3]+65,y=circles.data32F[i*3+1]+545;pts.push({x,y})}
+    const xs=[]; for(const [lo,hi] of SCAN_GROUP_RANGES){const gx=cluster1D(pts.filter(p=>p.x>=lo&&p.x<=hi).map(p=>p.x),8);if(gx.length!==5)return null;xs.push(gx)}
+    const ys=cluster1D(pts.filter(p=>p.y>=570&&p.y<=765).map(p=>p.y),8);if(ys.length!==13)return null;
+    const grid=[];
+    for(let g=0;g<4;g++)for(let r=0;r<13;r++)for(let c=0;c<5;c++){
+      const ex=xs[g][c],ey=ys[r];const cand=pts.filter(p=>Math.abs(p.x-ex)<7&&Math.abs(p.y-ey)<7);const p=cand.length?cand.reduce((best,v)=>(!best||(v.x-ex)**2+(v.y-ey)**2<(best.x-ex)**2+(best.y-ey)**2)?v:best,null):{x:ex,y:ey};grid.push(p)
+    }
+    return grid;
+  }catch(e){console.warn('HoughCircles indisponível',e);return null}
+  finally{[circles,roi,gray,src].forEach(m=>{try{m&&m.delete()}catch(_){}})}
+}
+function readAnswers(canvas){const ctx=canvas.getContext('2d');const centers=detectBubbleGrid(canvas);const out=[];
+  for(let g=0;g<4;g++)for(let row=0;row<13;row++){
+    const vals=[];for(let c=0;c<5;c++){const idx=(g*13+row)*5+c;const p=centers?centers[idx]:{x:BUBBLE_X[g*5+c],y:BUBBLE_Y[row]};vals.push(sampleBubble(ctx,p.x,p.y))}
+    const sorted=[...vals].sort((a,b)=>a-b),min=sorted[0],second=sorted[1],margin=second-min;let ans='NR',confidence=0,amb=false;
+    if(min<150&&margin>25){const idx=vals.indexOf(min);ans='ABCDE'[idx];confidence=Math.max(0,Math.min(100,Math.round(margin*1.8)))}
+    else if(min<150&&margin<=25){const lows=vals.filter(v=>v<150).length;if(lows>=2){amb=true;ans='?'}}
+    out.push({q:g*13+row+1,answer:ans,confidence,amb,values:vals});
+  }
+  return out}
+function cropName(canvas){const c=document.createElement('canvas');c.width=395;c.height=55;const ctx=c.getContext('2d');ctx.drawImage(canvas,112,276,412,52,0,0,412,52);return c}
+function normText(s){return String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\\s+/g,' ').trim()}
+function levenshtein(a,b){const m=a.length,n=b.length;const d=Array.from({length:m+1},(_,i)=>Array(n+1).fill(0));for(let i=0;i<=m;i++)d[i][0]=i;for(let j=0;j<=n;j++)d[0][j]=j;for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+function matchStudent(ocr){const q=normText(ocr);if(!q)return null;let best=null;for(const s of state.students){const n=normText(s.nome_aluno);const dist=levenshtein(q,n);const token= q.split(' ').filter(t=>t.length>2).reduce((score,t)=>score+(n.includes(t)?1:0),0);const score=dist-token*3;if(!best||score<best.score)best={s,score};}return best}
+async function recognizeName(canvas, onProgress){
+  if(!window.Tesseract)return {text:'',confidence:0,match:null};
+  try{const r=await Tesseract.recognize(cropName(canvas),'por',{logger:m=>{if(m.status==='recognizing text'&&onProgress)onProgress(Math.round((m.progress||0)*100))}});const text=(r.data.text||'').trim();const match=matchStudent(text);return {text,confidence:Math.round(r.data.confidence||0),match}}catch(e){console.warn(e);return {text:'',confidence:0,match:null}}
+}
+async function processOneScan(item,index,total){
+  item.status=`processando ${index+1}/${total}`;renderScanQueue();const img=await loadImage(item.url);const canvas=makeCanvas(img);const answers=readAnswers(canvas);const name=await recognizeName(canvas,p=>{item.status=`lendo nome ${p}%`;renderScanQueue()});
+  const keyMap=answers.map(x=>getKey('1',x.q));let correct=0,answered=0;answers.forEach((a,i)=>{if(a.answer!=='NR'&&a.answer!=='?'){answered++;if(a.answer===keyMap[i])correct++}});
+  const rec={item,canvas,answers,name,correct,answered,keyMap};item.status='concluído';renderScanQueue();return rec;
+}
+function renderScanResults(results){const el=document.getElementById('scan-results');el.innerHTML=results.map((r,ri)=>{const s=r.name.match?.s;const total=r.answers.filter(a=>a.answer!=='NR'&&a.answer!=='?').length;const amb=r.answers.filter(a=>a.amb).length;const ok=s&&amb===0;return `<div class="scan-result ${ok?'ok':'warn'}"><div class="scan-head"><div><h3 style="margin:0;color:var(--green)">${s?esc(s.nome_aluno):'Aluno não identificado automaticamente'}</h3><div class="muted">${s?`Matrícula ${esc(s.aluno_id)} · 3ª ${esc(s.turma)}`:`OCR: ${esc(r.name.text||'não reconhecido')}`}</div></div><div><b>${r.correct}/52</b><div class="muted">${Math.round(r.correct/52*100)}%</div></div></div><div class="scan-meter"><span style="width:${Math.round(r.correct/52*100)}%"></span></div><div class="muted" style="margin-top:8px">${total} respondidas · ${52-total-amb} em branco · ${amb} ambígua(s) · OCR ${r.name.confidence}%</div><div class="scan-answer-grid">${r.answers.map(a=>`<div class="scan-answer ${a.amb?'amb':a.answer==='NR'?'blank':a.answer===getKey('1',a.q)?'ok':'bad'}"><b>Q${String(a.q).padStart(2,'0')}</b><br>${a.answer}</div>`).join('')}</div><div class="form-actions"><button class="btn primary" onclick="saveScannedResult(${ri})">Salvar no painel</button>${(!s||amb)?`<button class="btn" onclick="reviewScan(${ri})">Conferir / corrigir</button>`:''}</div></div>`}).join('');window.lastScanResults=results}
+function reviewScan(i){const r=window.lastScanResults[i];const opts=state.students.map(s=>`<option value="${esc(s.aluno_id)}" ${r.name.match?.s?.aluno_id===s.aluno_id?'selected':''}>${esc(s.nome_aluno)} · 3ª ${esc(s.turma)}</option>`).join('');document.getElementById('modal-content').innerHTML=`<div class="modal-head"><h2>Conferir leitura</h2><button class="btn" onclick="closeModal()">Fechar</button></div><div class="notice">OCR leu: <b>${esc(r.name.text||'—')}</b>. Selecione o aluno correto e ajuste apenas as questões amarelas, se necessário.</div><div class="field" style="margin-top:14px"><label>Aluno</label><select id="scan-student-review" class="select"><option value="">Selecione</option>${opts}</select></div><div class="scan-answer-grid" style="margin-top:14px">${r.answers.map((a,i)=>`<div class="scan-answer ${a.amb?'amb':''}"><b>Q${String(a.q).padStart(2,'0')}</b><br><select id="scan-q-${i}" class="select" style="padding:5px;font-size:11px"><option>NR</option>${['A','B','C','D','E'].map(o=>`<option ${a.answer===o?'selected':''}>${o}</option>`).join('')}</select></div>`).join('')}</div><div class="form-actions"><button class="btn primary" onclick="applyScanReview(${i})">Aplicar correção</button></div>`;document.getElementById('modal').classList.add('open')}
+function applyScanReview(i){const r=window.lastScanResults[i];const id=document.getElementById('scan-student-review').value;if(id){const s=state.students.find(x=>x.aluno_id===id);r.name.match={s};}r.answers.forEach((a,j)=>a.answer=document.getElementById('scan-q-'+j).value);r.correct=r.answers.reduce((n,a)=>n+(a.answer!=='NR'&&a.answer===getKey('1',a.q)?1:0),0);closeModal();renderScanResults(window.lastScanResults)}
+function saveScannedResult(i){const r=window.lastScanResults[i],s=r.name.match?.s;if(!s){reviewScan(i);return}const rec={Matrícula:s.aluno_id,Aluno:s.nome_aluno,Turma:s.turma,Simulado:'Simulado 1'};r.answers.forEach(a=>rec['Q'+String(a.q).padStart(2,'0')]=a.answer==='?'?'':a.answer);state.responses=state.responses.filter(x=>!(String(x.Matrícula)===String(s.aluno_id)&&String(x.Simulado)==='Simulado 1'));state.responses.push(rec);persist();toast(`Resultado de ${s.nome_aluno} salvo automaticamente`);r.item.status='salvo';renderScanResults(window.lastScanResults)}
+async function processScanQueue(){const btn=document.getElementById('scan-process');btn.disabled=true;document.getElementById('scan-results').innerHTML='<div class="card">Carregando leitor e processando as folhas...</div>';try{if(!window.cv){await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src='https://docs.opencv.org/4.x/opencv.js';sc.onload=()=>{const wait=()=>window.cv&&cv.Mat?resolve():setTimeout(wait,100);wait()};sc.onerror=reject;document.head.appendChild(sc)})}if(!window.Tesseract){await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';sc.onload=resolve;sc.onerror=reject;document.head.appendChild(sc)})}const expanded=[];for(const item of scanQueue){if(item.file.type.includes('pdf')){item.status='abrindo PDF...';renderScanQueue();const pages=await pdfToCanvases(item.file);pages.forEach((c,j)=>expanded.push({file:item.file,url:null,name:`${item.name} · página ${j+1}`,status:'aguardando',pdfCanvas:c}))}else expanded.push(item)}const results=[];for(let i=0;i<expanded.length;i++){const item=expanded[i];if(item.pdfCanvas){item.status=`processando ${i+1}/${expanded.length}`;renderScanQueue();const answers=readAnswers(item.pdfCanvas),name=await recognizeName(item.pdfCanvas);const keyMap=answers.map(x=>getKey('1',x.q));let correct=0,answered=0;answers.forEach((a,j)=>{if(a.answer!=='NR'&&a.answer!=='?'){answered++;if(a.answer===keyMap[j])correct++}});results.push({item,canvas:item.pdfCanvas,answers,name,correct,answered,keyMap})}else results.push(await processOneScan(item,i,expanded.length))}renderScanResults(results)}catch(e){console.error(e);document.getElementById('scan-results').innerHTML='<div class="card notice">Não foi possível processar o arquivo. Verifique a internet e a qualidade do escaneamento.</div>'}finally{btn.disabled=!scanQueue.length}}
+document.getElementById('scan-files')?.addEventListener('change',e=>addScanFiles(e.target.files));document.getElementById('scan-camera')?.addEventListener('change',e=>addScanFiles(e.target.files));
+</script></body>
 </html>
