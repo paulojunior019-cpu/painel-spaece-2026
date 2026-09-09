@@ -298,6 +298,20 @@ function populateSelects(){
  document.getElementById("launch-class").innerHTML=opts;
  populateLaunchStudents();
 }
+function populateResultStudents(){
+ const cls=document.getElementById("res-class")?.value||"";
+ const rs=document.getElementById("res-student");
+ if(!rs)return;
+ const current=rs.value;
+ const students=state.students.filter(s=>s.ativo!==false && (!cls || String(s.turma)===String(cls))).sort((a,b)=>a.nome_aluno.localeCompare(b.nome_aluno,"pt-BR"));
+ rs.innerHTML='<option value="">Todos os alunos'+(cls?' da 3ª '+cls:'')+'</option>'+students.map(s=>`<option value="${esc(s.aluno_id)}">${esc(s.nome_aluno)}</option>`).join("");
+ if(students.some(s=>String(s.aluno_id)===String(current))) rs.value=current; else rs.value="";
+}
+function initResultFilterEvents(){
+ const cls=document.getElementById("res-class");
+ if(cls && !cls.dataset.bound){cls.addEventListener("change",populateResultStudents);cls.dataset.bound="1";}
+ populateResultStudents();
+}
 function populateLaunchStudents(){const c=document.getElementById("launch-class").value;document.getElementById("launch-student").innerHTML=state.students.filter(s=>s.turma===c).map(s=>`<option value="${esc(s.aluno_id)}">${esc(s.nome_aluno)}</option>`).join("");}
 function renderHome(){
  const active=state.students.filter(s=>s.ativo!==false);
@@ -326,6 +340,7 @@ function openItemsFor(n){showView("itens");document.getElementById("item-test").
 function applyResultFilters(){ renderResults(); toast("Filtros aplicados"); }
 function clearResultFilters(){
  ["res-class","res-student","res-subject","res-test"].forEach(id=>{const el=document.getElementById(id); if(el) el.value="";});
+ populateResultStudents();
  renderResults();
 }
 function renderResults(){
