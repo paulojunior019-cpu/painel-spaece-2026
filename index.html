@@ -121,6 +121,7 @@ table{min-width:760px}
   <div class="brand"><h1>PAINEL SPAECE 2026</h1><p>3ª série · Ensino Médio</p></div>
   <nav class="nav">
     <button class="active" data-view="home">Início</button>
+    <button data-view="dashboard">Dashboard</button>
     <button data-view="turmas">Turmas</button>
     <button data-view="alunos">Alunos</button>
     <button data-view="simulados">Simulados</button>
@@ -130,6 +131,7 @@ table{min-width:760px}
     <button data-view="evolucao">Evolução</button>
     <button data-view="ranking">Ranking</button>
     <button data-view="itens">Banco de itens</button>
+    <button data-view="relatorios">Relatórios</button>
   </nav>
 </aside>
 
@@ -148,6 +150,19 @@ table{min-width:760px}
       <div class="card"><h2>Últimos resultados</h2><div id="home-results"></div></div>
       <div class="card"><h2>Estado da TRI</h2><div class="notice">A matriz de respostas está estruturada. A TRI não será inventada: os parâmetros dos itens deverão ser calibrados posteriormente.</div><p class="muted" style="margin-top:12px">Fácil/Médio/Difícil é classificação pedagógica, não é o parâmetro <b>b</b> da TRI.</p></div>
     </div>
+  </div>
+
+  <div id="view-dashboard" class="view">
+    <div class="top"><div><div class="eyebrow">Gestão pedagógica</div><div class="title">Dashboard</div><p class="subtitle">Visão geral dos resultados corrigidos, turmas, disciplinas e habilidades críticas.</p></div><button class="btn primary" onclick="showView('resultados')">Ver resultados</button></div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Alunos cadastrados</div><div class="value" id="dash-students">—</div></div>
+      <div class="kpi-card"><div class="label">Resultados corrigidos</div><div class="value" id="dash-results">—</div></div>
+      <div class="kpi-card"><div class="label">Média geral</div><div class="value" id="dash-average">—</div></div>
+      <div class="kpi-card"><div class="label">Acertos médios</div><div class="value" id="dash-correct">—</div></div>
+    </div>
+    <div class="analysis-grid" style="margin-top:16px"><div class="card"><h2>Desempenho por turma</h2><div id="dash-classes"></div></div><div class="card"><h2>Desempenho por disciplina</h2><div id="dash-subjects"></div></div></div>
+    <div class="analysis-grid" style="margin-top:16px"><div class="card"><h2>Questões com menor desempenho</h2><div id="dash-items"></div></div><div class="card"><h2>Desempenho por dificuldade</h2><div id="dash-difficulty"></div></div></div>
+    <div class="card section"><h2>Descritores prioritários</h2><div class="muted">Habilidades com menor percentual de acerto entre os resultados corrigidos.</div><div id="dash-descriptors" style="margin-top:12px"></div></div>
   </div>
 
   <div id="view-turmas" class="view">
@@ -201,23 +216,7 @@ table{min-width:760px}
     <div class="top"><div><div class="eyebrow">Análise</div><div class="title">Resultados</div><p class="subtitle">Resultados corrigidos quando houver gabarito cadastrado.</p></div></div>
     <div class="card"><div class="grid filters" style="margin-bottom:14px"><div class="field"><label>Turma</label><select id="res-class" class="select"><option value="">Todas</option></select></div><div class="field"><label>Aluno</label><select id="res-student" class="select"><option value="">Todos os alunos</option></select></div><div class="field"><label>Disciplina</label><select id="res-subject" class="select"><option value="">Todas</option><option value="Matemática">Matemática</option><option value="Português">Português</option></select></div><div class="field"><label>Simulado</label><select id="res-test" class="select"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div><div class="form-actions" style="margin-top:0;display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" onclick="applyResultFilters()">Filtrar resultados</button><button class="btn" type="button" onclick="clearResultFilters()">Limpar filtros</button></div>
 <div class="notice" style="margin-bottom:0"><b>Consulta individual:</b> escolha um aluno para ver rapidamente onde ele acertou, errou ou deixou em branco. Clique em <b>Ver detalhes</b>.</div>
-<section id="page-dashboard" class="page">
-<div class="page-head"><div><h1>Dashboard de Gestão</h1><p class="muted">Visão geral do desempenho do Simulado 1.</p></div></div>
-<div class="kpi-grid">
-<div class="kpi-card"><div class="label">Alunos cadastrados</div><div class="value" id="dash-students">—</div></div>
-<div class="kpi-card"><div class="label">Resultados corrigidos</div><div class="value" id="dash-results">—</div></div>
-<div class="kpi-card"><div class="label">Média geral</div><div class="value" id="dash-average">—</div></div>
-<div class="kpi-card"><div class="label">Acertos médios</div><div class="value" id="dash-correct">—</div></div>
-</div>
-<div class="analysis-grid" style="margin-top:16px">
-<div class="card"><h2>Desempenho por turma</h2><div id="dash-classes"></div></div>
-<div class="card"><h2>Desempenho por disciplina</h2><div id="dash-subjects"></div></div>
-</div>
-<div class="analysis-grid" style="margin-top:16px">
-<div class="card"><h2>Questões com menor desempenho</h2><div id="dash-items"></div></div>
-<div class="card"><h2>Desempenho por dificuldade</h2><div id="dash-difficulty"></div></div>
-</div>
-</section>
+
 <div id="results-table"></div>
 <div id="descriptor-analysis" class="card descriptor-card"></div>
 <div id="student-detail" class="student-detail"></div>
@@ -232,6 +231,12 @@ table{min-width:760px}
   <div id="view-ranking" class="view">
     <div class="top"><div><div class="eyebrow">Desempenho</div><div class="title">Ranking</div><p class="subtitle">Ordenado pelos resultados corrigidos.</p></div></div>
     <div class="card"><div id="ranking"></div></div>
+  </div>
+
+  <div id="view-relatorios" class="view">
+    <div class="top"><div><div class="eyebrow">Documentos</div><div class="title">Relatórios</div><p class="subtitle">Gere uma versão pronta para impressão do diagnóstico da escola, turma ou aluno.</p></div></div>
+    <div class="card"><div class="grid filters"><div class="field"><label>Tipo</label><select id="report-type" class="select" onchange="renderReportPreview()"><option value="escola">Escola</option><option value="turma">Turma</option><option value="aluno">Aluno</option></select></div><div class="field"><label>Turma</label><select id="report-class" class="select" onchange="populateReportStudents();renderReportPreview()"><option value="">Todas</option></select></div><div class="field"><label>Aluno</label><select id="report-student" class="select" onchange="renderReportPreview()"><option value="">Todos</option></select></div><div class="field"><label>Simulado</label><select id="report-test" class="select" onchange="renderReportPreview()"><option value="">Todos</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div></div><div class="form-actions"><button class="btn primary" onclick="printReport()">Imprimir / salvar PDF</button></div></div>
+    <div id="report-preview" class="card" style="margin-top:16px"></div>
   </div>
 
   <div id="view-itens" class="view">
@@ -499,7 +504,7 @@ function saveLaunch(){
 }
 function closeModal(){document.getElementById("modal").classList.remove("open")}
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()}
-function renderAll(){populateSelects();initResultFilterEvents();renderHome();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems()}
+function renderAll(){populateSelects();initResultFilterEvents();renderHome();renderDashboard();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems();initReportFilters();renderReportPreview()}
 renderAll();
 
 function showStudentDetail(studentId,simulado){
@@ -570,6 +575,17 @@ function renderDashboard(){
    let ok=0,n=0;results.forEach(x=>["math","port"].forEach(k=>{ok+=x.c[k].byDiff[d].correct;n+=x.c[k].byDiff[d].total}));
    return `<div class="mini-row"><b>${d}</b><div class="mini-bar"><span style="width:${n?ok/n*100:0}%"></span></div><b>${n?pct(ok/n):"—"}</b></div>`;
  }).join("");
+ renderDashboardDescriptors(results);
+}
+
+function renderDashboardDescriptors(results){
+ const box=document.getElementById("dash-descriptors"); if(!box)return;
+ const rows=descriptorMeta.map(d=>{
+   let n=0,ok=0;
+   results.forEach(x=>{const a=x.r["Q"+String(d.q).padStart(2,"0")],k=getKey(String(x.r.Simulado).replace(/\D/g,"")||"1",d.q);if(a&&a!=="NR"&&k){n++;if(a===k)ok++}});
+   return {...d,n,ok,rate:n?ok/n:null};
+ }).filter(x=>x.n).sort((a,b)=>a.rate-b.rate).slice(0,10);
+ box.innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Questão</th><th>Descritor</th><th>Habilidade</th><th>Acertos</th><th>%</th></tr></thead><tbody>${rows.map(x=>`<tr><td>Q${String(x.q).padStart(2,"0")}</td><td><b>${x.d}</b></td><td>${esc(x.skill)}</td><td>${x.ok}/${x.n}</td><td class="${x.rate<.5?"descriptor-critical":x.rate<.7?"descriptor-attention":"descriptor-good"}">${pct(x.rate)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Ainda não há resultados corrigidos suficientes.</div>`;
 }
 
 function itemAnalysisRows(){
@@ -909,5 +925,37 @@ async function processScanQueue(){
 document.getElementById('scan-student-global')?.addEventListener('change',e=>{ const v=e.target.value; scanQueue.forEach(x=>{if(!x.studentId)x.studentId=v;}); renderScanQueue(); });
 document.getElementById('scan-files')?.addEventListener('change',e=>addScanFiles(e.target.files));
 document.getElementById('scan-camera')?.addEventListener('change',e=>addScanFiles(e.target.files));
+
+function initReportFilters(){
+ const rc=document.getElementById("report-class"); if(!rc)return;
+ const cur=rc.value; rc.innerHTML='<option value="">Todas</option>'+classes.map(c=>`<option value="${c}">3ª ${c}</option>`).join(""); rc.value=cur;
+ populateReportStudents();
+}
+function populateReportStudents(){
+ const rc=document.getElementById("report-class"), rs=document.getElementById("report-student"); if(!rc||!rs)return;
+ const cur=rs.value, cls=rc.value;
+ const list=state.students.filter(s=>s.ativo!==false&&(!cls||s.turma===cls)).sort((a,b)=>a.nome_aluno.localeCompare(b.nome_aluno,"pt-BR"));
+ rs.innerHTML='<option value="">Todos</option>'+list.map(s=>`<option value="${esc(s.aluno_id)}">${esc(s.nome_aluno)}</option>`).join("");
+ rs.value=list.some(s=>String(s.aluno_id)===String(cur))?cur:"";
+}
+function reportRows(){
+ const type=document.getElementById("report-type")?.value||"escola",cls=document.getElementById("report-class")?.value||"",sid=document.getElementById("report-student")?.value||"",test=document.getElementById("report-test")?.value||"";
+ return state.responses.map(r=>({r,s:findStudent(r.Aluno,r.Matrícula),c:calcRecord(r)})).filter(x=>x.s&&x.c).filter(x=>(!cls||x.s.turma===cls)&&(!sid||String(x.s.aluno_id)===String(sid))&&(!test||(String(x.r.Simulado).replace(/\D/g,"")||"1")===test));
+}
+function renderReportPreview(){
+ const box=document.getElementById("report-preview"); if(!box)return;
+ const type=document.getElementById("report-type")?.value||"escola", rows=reportRows();
+ const title=type==="aluno"&&rows[0]?rows[0].s.nome_aluno:type==="turma"?(document.getElementById("report-class")?.value?`3ª ${document.getElementById("report-class").value}`:"Todas as turmas"):"PAINEL SPAECE 2026 — Relatório geral";
+ if(!rows.length){box.innerHTML=`<h2>${esc(title)}</h2><div class="empty">Não há resultados corrigidos para os filtros selecionados.</div>`;return}
+ const avg=rows.reduce((a,x)=>a+x.c.percent,0)/rows.length;
+ const m=rows.reduce((a,x)=>a+x.c.math.percent,0)/rows.length,p=rows.reduce((a,x)=>a+x.c.port.percent,0)/rows.length;
+ const byClass=classes.map(cl=>{const a=rows.filter(x=>x.s.turma===cl);return {cl,n:a.length,avg:a.length?a.reduce((z,x)=>z+x.c.percent,0)/a.length:null}}).filter(x=>x.n);
+ box.innerHTML=`<div id="printable-report"><h2 style="margin-top:0">${esc(title)}</h2><p class="muted">Gerado em ${new Date().toLocaleString("pt-BR")}</p><div class="detail-grid"><div class="detail-stat"><div class="muted">Resultados</div><div class="v">${rows.length}</div></div><div class="detail-stat"><div class="muted">Média geral</div><div class="v">${pct(avg)}</div></div><div class="detail-stat"><div class="muted">Matemática</div><div class="v">${pct(m)}</div></div><div class="detail-stat"><div class="muted">Português</div><div class="v">${pct(p)}</div></div></div><h3>Desempenho</h3><div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Geral</th></tr></thead><tbody>${rows.sort((a,b)=>b.c.percent-a.c.percent).map(x=>`<tr><td>${esc(x.s.nome_aluno)}</td><td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td><td>${pct(x.c.math.percent)}</td><td>${pct(x.c.port.percent)}</td><td><b>${pct(x.c.percent)}</b></td></tr>`).join("")}</tbody></table></div>${byClass.length>1?`<h3 style="margin-top:18px">Média por turma</h3><div class="table-wrap"><table><thead><tr><th>Turma</th><th>Resultados</th><th>Média</th></tr></thead><tbody>${byClass.map(x=>`<tr><td>3ª ${x.cl}</td><td>${x.n}</td><td>${pct(x.avg)}</td></tr>`).join("")}</tbody></table></div>`:""}</div>`;
+}
+function printReport(){
+ const content=document.getElementById("printable-report")?.innerHTML;if(!content){toast("Não há dados para imprimir");return}
+ const w=window.open("","_blank"); if(!w){toast("Permita pop-ups para gerar o relatório");return}
+ w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório SPAECE 2026</title><style>body{font-family:Arial,sans-serif;color:#193428;padding:28px}h2{color:#0c3525}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:12px}th{background:#f5efdc}.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.detail-stat{border:1px solid #ddd;padding:12px}.v{font-size:22px;font-weight:800;margin-top:5px}@media print{body{padding:10mm}}</style></head><body>${content}</body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300);
+}
 </script></body>
 </html>
