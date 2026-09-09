@@ -168,7 +168,14 @@ table{min-width:760px}
     <div class="top"><div><div class="eyebrow">Automação</div><div class="title">Correção automática</div><p class="subtitle">Escolha o aluno de cada folha e envie a imagem. O sistema reconhece automaticamente as marcações A–E pela posição dos círculos do cartão-resposta.</p></div></div>
     <div class="card">
       <div class="notice"><b>Como usar:</b> selecione o <b>aluno correspondente a cada folha</b>, depois escaneie/fotografe o cartão inteiro. O sistema corrige automaticamente as 52 marcações. Se alguma questão ficar amarela, use <b>Conferir / corrigir</b>. O leitor foi calibrado para o cartão do <b>1º Simulado SPAECE 2026</b> da E.E.M. Frei Policarpo.</div>
-      <div class="scan-actions">
+      <div class="field" style="max-width:620px;margin-top:14px">
+        <label><b>Aluno da folha que será escaneada</b></label>
+        <select id="scan-student-global" class="select">
+          ${studentOptions('')}
+        </select>
+        <div class="muted" style="margin-top:5px">Escolha o aluno antes de fotografar/selecionar a folha. Depois você ainda poderá alterar o aluno individualmente em cada folha da fila.</div>
+      </div>
+      <div class="scan-actions" style="margin-top:14px">
         <label class="btn primary scan-label">📷 Escanear com câmera<input id="scan-camera" type="file" accept="image/*" capture="environment" hidden></label>
         <label class="btn scan-label">Selecionar imagens<input id="scan-files" type="file" accept="image/*,application/pdf" multiple hidden></label>
         <button class="btn" onclick="clearScanQueue()">Limpar fila</button>
@@ -489,7 +496,7 @@ function addScanFiles(files){
   [...files].forEach(file=>{
     if(!file.type.startsWith('image/')&&!file.type.includes('pdf'))return;
     const url=file.type.includes('pdf')?null:URL.createObjectURL(file);
-    scanQueue.push({file,url,name:file.name,status:'aguardando',studentId:''});
+    scanQueue.push({file,url,name:file.name,status:'aguardando',studentId:document.getElementById('scan-student-global')?.value||''});
   });
   renderScanQueue();
 }
@@ -512,7 +519,7 @@ function renderScanQueue(){
     sel.addEventListener('change',e=>{scanQueue[Number(e.target.dataset.index)].studentId=e.target.value;});
   });
   status.textContent=scanQueue.length?`${scanQueue.length} folha(s) na fila. Selecione o aluno de cada folha antes de processar.`:'Nenhuma folha selecionada.';
-  btn.disabled=!scanQueue.length;
+  btn.disabled=!scanQueue.length || scanQueue.some(x=>!x.studentId);
 }
 function clearScanQueue(){
   scanQueue.forEach(x=>{if(x.url)URL.revokeObjectURL(x.url)});
@@ -716,7 +723,7 @@ async function processScanQueue(){
       if(item.file.type.includes('pdf')){
         item.status='abrindo PDF...';renderScanQueue();
         const pages=await pdfToCanvases(item.file);
-        pages.forEach((c,j)=>expanded.push({file:item.file,url:null,name:`${item.name} · página ${j+1}`,status:'aguardando',studentId:item.studentId,pdfCanvas:c}));
+        pages.forEach((c,j)=>expanded.push({file:item.file,url:null,name:`${item.name} · página ${j+1}`,status:'aguardando',studentId:item.studentId||document.getElementById('scan-student-global')?.value||'',pdfCanvas:c}));
       }else expanded.push(item);
     }
     const results=[];
@@ -738,6 +745,7 @@ async function processScanQueue(){
     document.getElementById('scan-results').innerHTML='<div class="card notice">Não foi possível processar. Use uma foto nítida, com o cartão inteiro visível e boa iluminação.</div>';
   }finally{btn.disabled=!scanQueue.length}
 }
+document.getElementById('scan-student-global')?.addEventListener('change',e=>{ const v=e.target.value; scanQueue.forEach(x=>{if(!x.studentId)x.studentId=v;}); renderScanQueue(); });
 document.getElementById('scan-files')?.addEventListener('change',e=>addScanFiles(e.target.files));
 document.getElementById('scan-camera')?.addEventListener('change',e=>addScanFiles(e.target.files));
 </script></body>
