@@ -92,6 +92,7 @@ table{min-width:760px}
 .results-focus{margin:10px 0}
 @media(max-width:900px){#student-detail .question-grid{grid-template-columns:repeat(8,minmax(62px,1fr))}}
 @media(max-width:600px){#student-detail .question-grid{grid-template-columns:repeat(4,minmax(68px,1fr))}}
+.descriptor-card{margin-top:16px}.descriptor-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.descriptor-table td,.descriptor-table th{vertical-align:top}.descriptor-code{font-weight:850;color:var(--green);white-space:nowrap}.descriptor-skill{min-width:280px}.descriptor-good{color:#21633b;font-weight:800}.descriptor-attention{color:#8a6200;font-weight:800}.descriptor-critical{color:#a33b32;font-weight:800}.q-descriptor{margin-top:5px;padding:5px 7px;border-radius:7px;background:#f5f1e5;font-size:10px;color:#59665e;text-align:left}.q-descriptor b{color:var(--green)}
 </style>
 </head>
 
@@ -218,6 +219,7 @@ table{min-width:760px}
 </div>
 </section>
 <div id="results-table"></div>
+<div id="descriptor-analysis" class="card descriptor-card"></div>
 <div id="student-detail" class="student-detail"></div>
 <div class="muted" style="margin-top:10px">Dica: use “Ver detalhes” para conferir as 52 respostas do aluno, uma por uma.</div></div>
   </div>
@@ -279,6 +281,62 @@ function calcRecord(rec){
  result.percent=result.correct/52; result.math.percent=result.math.correct/26; result.port.percent=result.port.correct/26;
  return result;
 }
+const descriptorMeta = [
+  [1,"Matemática","D65","Calcular o perímetro de figuras planas em uma situação-problema","oficial"],
+  [2,"Matemática","D16","Reconhecer a representação de frações e números decimais","oficial"],
+  [3,"Matemática","D49","Resolver situações envolvendo semelhança de figuras","oficial"],
+  [4,"Matemática","D52","Identificar planificações de sólidos geométricos","oficial"],
+  [5,"Matemática","D78","Resolver problemas envolvendo medidas de tendência central","oficial"],
+  [6,"Matemática","D28","Resolver problemas envolvendo função do 1º grau","oficial"],
+  [7,"Matemática","D49","Resolver situações envolvendo semelhança de figuras","oficial"],
+  [8,"Matemática","D55","Reconhecer a equação de uma reta a partir de informações dadas","oficial"],
+  [9,"Matemática","D28","Resolver problemas envolvendo função do 1º grau","oficial"],
+  [10,"Matemática","D65","Calcular o perímetro de figuras planas em uma situação-problema","oficial"],
+  [11,"Matemática","D54","Determinar área/medida de região representada no plano cartesiano","oficial"],
+  [12,"Matemática","D67","Resolver problemas envolvendo área de figuras planas","oficial"],
+  [13,"Matemática","D28","Resolver problemas envolvendo função do 1º grau","oficial"],
+  [14,"Matemática","D64","Estabelecer relações entre unidades de medida","oficial"],
+  [15,"Matemática","D28","Resolver problemas/modelar situações por função do 1º grau","oficial"],
+  [16,"Matemática","D40","Determinar raízes/zeros de uma função ou expressão polinomial","revisar"],
+  [17,"Matemática","D55","Interpretar/reconhecer o gráfico de uma função do 1º grau","oficial"],
+  [18,"Matemática","D33","Resolver problemas envolvendo probabilidade","oficial"],
+  [19,"Matemática","D19","Analisar variação/comportamento de uma função em uma situação-problema","revisar"],
+  [20,"Matemática","D22","Associar tabela/lista de dados ao gráfico correspondente","oficial"],
+  [21,"Matemática","D71","Calcular a área total de uma superfície","oficial"],
+  [22,"Matemática","D24","Fatorar ou simplificar expressões algébricas","oficial"],
+  [23,"Matemática","D64","Estabelecer relações entre unidades de medida","revisar"],
+  [24,"Matemática","D57","Localizar ponto/representação no plano cartesiano","revisar"],
+  [25,"Matemática","D32","Resolver problemas envolvendo função quadrática","oficial"],
+  [26,"Matemática","D22","Associar tabela/lista de dados ao gráfico correspondente","oficial"],
+  [27,"Português","D09","Reconhecer o gênero textual","oficial"],
+  [28,"Português","D22","Reconhecer efeitos de humor ou ironia","oficial"],
+  [29,"Português","D15","Identificar a tese defendida no texto","oficial"],
+  [30,"Português","D02","Inferir informação implícita no texto","oficial"],
+  [31,"Português","D02","Inferir informação implícita no texto","oficial"],
+  [32,"Português","D05","Identificar o tema/assunto do texto","oficial"],
+  [33,"Português","D03","Reconhecer o sentido de palavra ou expressão no contexto","oficial"],
+  [34,"Português","D21","Reconhecer efeitos de recursos estilísticos e morfossintáticos","oficial"],
+  [35,"Português","D01","Localizar informação explícita no texto","oficial"],
+  [36,"Português","D04","Interpretar a articulação entre linguagem verbal e não verbal","oficial"],
+  [37,"Português","D23","Reconhecer níveis de linguagem e marcas linguísticas","oficial"],
+  [38,"Português","D22","Reconhecer efeitos de humor ou ironia","oficial"],
+  [39,"Português","D05","Identificar o tema/assunto do texto","oficial"],
+  [40,"Português","D05","Identificar o tema/assunto do texto","oficial"],
+  [41,"Português","D05","Identificar o tema/assunto do texto","oficial"],
+  [42,"Português","D12","Reconhecer semelhanças e diferenças entre textos","oficial"],
+  [43,"Português","D12","Reconhecer semelhanças e diferenças entre ideias/opiniões","oficial"],
+  [44,"Português","D13","Reconhecer diferentes formas de tratar uma mesma informação/tema","oficial"],
+  [45,"Português","D03","Reconhecer o sentido de palavra ou expressão no contexto","oficial"],
+  [46,"Português","D19","Reconhecer efeitos de sentido decorrentes da escolha de palavra/expressão","oficial"],
+  [47,"Português","D23","Reconhecer níveis de linguagem e marcas linguísticas","oficial"],
+  [48,"Português","D21","Reconhecer efeitos de recursos estilísticos e morfossintáticos","oficial"],
+  [49,"Português","D21","Reconhecer efeitos de recursos estilísticos e morfossintáticos","oficial"],
+  [50,"Português","D21","Reconhecer efeito de recurso estilístico/figura de linguagem","oficial"],
+  [51,"Português","D23","Reconhecer níveis de linguagem e marcas linguísticas","oficial"],
+  [52,"Português","D03","Reconhecer o sentido de palavra ou expressão no contexto","oficial"]
+].map(x=>({q:x[0],sub:x[1],d:x[2],skill:x[3],status:x[4]}));
+function descriptorFor(q){return descriptorMeta[q-1]||null}
+
 function findStudent(name,id){
  if(id){const x=state.students.find(s=>s.aluno_id===id);if(x)return x}
  const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g," ").trim();
@@ -372,6 +430,7 @@ function renderResults(){
     </div></td>
    </tr>`;
  }).join("")}</tbody></table></div>`:`<div class="empty">Nenhum resultado corrigido para os filtros selecionados.</div>`;
+  renderDescriptorAnalysis(rows);
 }
 function deleteResponse(studentId, simulado){
  const s=state.students.find(x=>String(x.aluno_id)===String(studentId));
@@ -397,10 +456,25 @@ function renderRanking(){
  const arr=Object.values(grouped).map(x=>({...x,avg:x.vals.reduce((a,b)=>a+b,0)/x.vals.length})).sort((a,b)=>b.avg-a.avg);
  document.getElementById("ranking").innerHTML=arr.length?`<div class="ranking">${arr.map((x,i)=>`<div class="rank-row"><div class="rank-no ${i===0?"first":""}">${i+1}</div><div class="rank-name"><b>${esc(x.s.nome_aluno)}</b><div class="muted">3ª ${x.s.turma}</div></div><div><b>${pct(x.avg)}</b></div></div>`).join("")}</div>`:`<div class="empty">O ranking aparecerá após o cadastro do gabarito.</div>`;
 }
+function renderDescriptorAnalysis(rows){
+ const box=document.getElementById("descriptor-analysis"); if(!box)return;
+ const subject=document.getElementById("res-subject")?.value||"";
+ const metas=descriptorMeta.filter(d=>!subject||d.sub===subject);
+ if(!rows.length){box.innerHTML='<h2 style="margin-top:0">Desempenho por descritor</h2><div class="empty">Aplique um filtro com resultados corrigidos para visualizar o desempenho por descritor.</div>';return}
+ const html=metas.map(d=>{
+   const vals=rows.map(x=>{const a=x.r["Q"+String(d.q).padStart(2,"0")];const k=getKey(x.sim,d.q);return a&&k?{answered:1,ok:a===k}:null}).filter(Boolean);
+   const answered=vals.length, correct=vals.filter(v=>v.ok).length, rate=answered?correct/answered:null;
+   const cls=rate===null?"":rate>=.7?"descriptor-good":rate>=.5?"descriptor-attention":"descriptor-critical";
+   const status=rate===null?"Sem dados":rate>=.7?"Bom desempenho":rate>=.5?"Atenção":"Prioridade de intervenção";
+   return `<tr><td>Q${String(d.q).padStart(2,"0")}</td><td><span class="descriptor-code">${d.d}</span>${d.status!=="oficial"?'<div class="muted">Revisar código</div>':''}</td><td class="descriptor-skill">${d.skill}</td><td>${correct}/${answered}</td><td class="${cls}">${rate===null?"—":pct(rate)}</td><td class="${cls}">${status}</td></tr>`;
+ }).join("");
+ box.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h2 style="margin:0">Desempenho por descritor</h2><div class="muted" style="margin-top:4px">Percentual de acertos por questão/descritor considerando os resultados filtrados.</div></div></div><div class="table-wrap" style="margin-top:12px"><table class="descriptor-table"><thead><tr><th>Questão</th><th>Descritor</th><th>Habilidade</th><th>Acertos</th><th>%</th><th>Situação</th></tr></thead><tbody>${html}</tbody></table></div>`;
+}
+
 function renderItems(){
  const n=document.getElementById("item-test").value, sub=document.getElementById("item-subject").value;
  const items=Array.from({length:52},(_,i)=>({q:i+1,sub:i<26?"Matemática":"Português",dif:difficulties[i]})).filter(x=>!sub||x.sub===sub);
- document.getElementById("items-table").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Questão</th><th>Disciplina</th><th>Dificuldade</th><th>Gabarito</th><th></th></tr></thead><tbody>${items.map(x=>`<tr><td>Q${String(x.q).padStart(2,"0")}</td><td>${x.sub}</td><td>${x.dif}</td><td><select class="select" style="width:80px;padding:7px" id="key-${n}-${x.q}"><option value="">—</option>${["A","B","C","D","E"].map(o=>`<option ${getKey(n,x.q)===o?"selected":""}>${o}</option>`).join("")}</select></td><td><button class="btn primary" onclick="saveKey(${n},${x.q})">Salvar</button></td></tr>`).join("")}</tbody></table></div>`;
+ document.getElementById("items-table").innerHTML=`<div class="table-wrap"><table><thead><tr><th>Questão</th><th>Disciplina</th><th>Descritor</th><th>Habilidade</th><th>Dificuldade</th><th>Gabarito</th><th></th></tr></thead><tbody>${items.map(x=>`<tr><td>Q${String(x.q).padStart(2,"0")}</td><td>${x.sub}</td><td><b>${descriptorFor(x.q)?.d||"—"}</b></td><td class="item-detail">${descriptorFor(x.q)?.skill||"—"}</td><td>${x.dif}</td><td><select class="select" style="width:80px;padding:7px" id="key-${n}-${x.q}"><option value="">—</option>${["A","B","C","D","E"].map(o=>`<option ${getKey(n,x.q)===o?"selected":""}>${o}</option>`).join("")}</select></td><td><button class="btn primary" onclick="saveKey(${n},${x.q})">Salvar</button></td></tr>`).join("")}</tbody></table></div>`;
 }
 function saveKey(n,q){state.keys[n+"-"+q]=document.getElementById(`key-${n}-${q}`).value;persist();toast(`Gabarito Q${String(q).padStart(2,"0")} salvo`);renderAll()}
 function openStudent(id=""){
@@ -441,11 +515,13 @@ function showStudentDetail(studentId,simulado){
    const q=from+idx+1,k=getKey(simulado,q);
    const status=!a?"blank":(k&&a===k?"ok":k?"bad":"pending");
    const label=!a?"Em branco":(k?(a===k?"Acerto":"Erro"):"Sem gabarito");
+   const dm=descriptorFor(q);
    return `<div class="qcell ${status}" title="Q${String(q).padStart(2,"0")} · Marcada: ${a||"—"} · Gabarito: ${k||"—"}">
      <div class="qnum">Q${String(q).padStart(2,"0")}</div>
      <div class="qans">${a||"—"}</div>
      <div class="qkey">Gabarito: ${k||"—"}</div>
      <div style="font-size:10px;font-weight:800;margin-top:3px">${label}</div>
+     ${dm?`<div class="q-descriptor"><b>${dm.d}</b> · ${esc(dm.skill)}</div>`:""}
    </div>`;
  }).join("");
  box.innerHTML=`<div class="card">
