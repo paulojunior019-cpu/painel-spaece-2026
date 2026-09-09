@@ -84,7 +84,7 @@ table{min-width:760px}
 .scan-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.scan-label{display:inline-flex;align-items:center;justify-content:center}.scan-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.scan-thumb{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}.scan-thumb img{width:100%;aspect-ratio:595/842;object-fit:cover;border-radius:8px}.scan-thumb .scan-name{font-size:12px;font-weight:700;margin-top:7px;word-break:break-word}.scan-results{display:grid;gap:12px;margin-top:18px}.scan-result{border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:15px}.scan-result.ok{border-color:#7bb88a}.scan-result.warn{border-color:#d7b66a}.scan-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.scan-answer-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;margin-top:12px}.scan-answer{border:1px solid var(--line);border-radius:7px;text-align:center;padding:5px 2px;font-size:11px;background:#fff}.scan-answer.ok{background:#e8f5eb;border-color:#75ae80}.scan-answer.bad{background:#fff0ef;border-color:#d38b85}.scan-answer.amb{background:#fff5d8;border-color:#d6b35b}.scan-answer.blank{background:#f3f3f3}.scan-meter{height:8px;background:#eee;border-radius:9px;overflow:hidden;margin-top:7px}.scan-meter span{display:block;height:100%;background:var(--gold)}
 @media(max-width:800px){.scan-list{grid-template-columns:1fr 1fr}.scan-answer-grid{grid-template-columns:repeat(8,1fr)}}
 @media(max-width:500px){.scan-list{grid-template-columns:1fr}.scan-answer-grid{grid-template-columns:repeat(6,1fr)}}
-</style>
+<style>.btn.danger{border-color:#c9827a;color:#9b3328;background:#fff5f3}.btn.danger:hover{background:#fde9e6}</style></head>
 
 <style>
 /* Ajuste de encaixe para notebooks em 100% de zoom */
@@ -310,8 +310,23 @@ function renderResults(){
  });
  document.getElementById("results-table").innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Mat.</th><th>Port.</th><th>Total</th><th>Geral</th><th>Fácil</th><th>Médio</th><th>Difícil</th><th>Ação</th></tr></thead><tbody>${rows.sort((a,b)=>b.cr.percent-a.cr.percent).map(x=>{
    const dif=["Fácil","Médio","Difícil"].map(d=>{let co=0,to=0;["math","port"].forEach(k=>{co+=x.cr[k].byDiff[d].correct;to+=x.cr[k].byDiff[d].total});return to?`${co}/${to}`:"—"});
-   return `<tr><td><b>${esc(x.s.nome_aluno)}</b></td><td>3ª ${x.s.turma}</td><td>${esc(x.r.Simulado)}</td><td>${x.cr.math.correct}/26</td><td>${x.cr.port.correct}/26</td><td><b>${x.cr.correct}/52</b></td><td><b>${pct(x.cr.percent)}</b></td><td>${dif[0]}</td><td>${dif[1]}</td><td>${dif[2]}</td><td><button class="btn small" onclick="showStudentDetail('${x.s.aluno_id}','${sim}')">Ver</button></td></tr>`
+   return `<tr><td><b>${esc(x.s.nome_aluno)}</b></td><td>3ª ${x.s.turma}</td><td>${esc(x.r.Simulado)}</td><td>${x.cr.math.correct}/26</td><td>${x.cr.port.correct}/26</td><td><b>${x.cr.correct}/52</b></td><td><b>${pct(x.cr.percent)}</b></td><td>${dif[0]}</td><td>${dif[1]}</td><td>${dif[2]}</td><td><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn small" onclick="showStudentDetail('${x.s.aluno_id}','${sim}')">Ver</button><button class="btn small danger" onclick="deleteResponse('${x.s.aluno_id}','${sim}')">Apagar</button></div></td></tr>`
  }).join("")}</tbody></table></div>`:`<div class="empty">Nenhum resultado corrigido.</div>`;
+}
+function deleteResponse(studentId, simulado){
+ const s=state.students.find(x=>String(x.aluno_id)===String(studentId));
+ if(!s)return;
+ const sim="Simulado "+String(simulado);
+ const idx=state.responses.findIndex(r=>String(r.Matrícula)===String(studentId)&&String(r.Simulado)===sim);
+ if(idx<0){toast("Lançamento não encontrado");return}
+ const ok=confirm(`Apagar o lançamento de ${s.nome_aluno} — ${sim}?\n\nAs 52 respostas serão removidas deste navegador. Esta ação não pode ser desfeita.`);
+ if(!ok)return;
+ state.responses.splice(idx,1);
+ persist();
+ const detail=document.getElementById("student-detail");
+ if(detail)detail.classList.remove("open");
+ toast("Lançamento apagado");
+ renderAll();
 }
 function renderEvolution(){
  const by={};state.responses.forEach(r=>{const s=findStudent(r.Aluno,r.Matrícula);const c=calcRecord(r);if(!s||!c)return;(by[s.turma]??={1:[],2:[],3:[]})[String(r.Simulado).replace(/\D/g,"")||"1"].push(c.percent)});
