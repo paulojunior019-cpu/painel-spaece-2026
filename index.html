@@ -162,6 +162,7 @@ table{min-width:760px}
       <div class="kpi-card"><div class="label">Acertos médios</div><div class="value" id="dash-correct">—</div></div>
     </div>
     <div class="analysis-grid" style="margin-top:16px"><div class="card"><h2>Desempenho por turma</h2><div id="dash-classes"></div></div><div class="card"><h2>Desempenho por disciplina</h2><div id="dash-subjects"></div></div></div>
+    <div class="card section" style="margin-top:16px"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap"><div><h2 style="margin:0">Proficiência por disciplina</h2><div class="muted" style="margin-top:5px">Hierarquia pedagógica: aluno → turma → escola. A proficiência é apresentada separadamente para Matemática e Português.</div></div><div class="field" style="min-width:180px"><label>Disciplina</label><select id="prof-subject-dash" class="select" onchange="renderProficiencyHierarchy()"><option value="Matemática">Matemática</option><option value="Português">Português</option></select></div></div><div id="prof-hierarchy" style="margin-top:16px"></div></div>
     <div class="analysis-grid" style="margin-top:16px"><div class="card"><h2>Questões com menor desempenho</h2><div id="dash-items"></div></div><div class="card"><h2>Desempenho por dificuldade</h2><div id="dash-difficulty"></div></div></div>
     <div class="card section"><h2>Descritores prioritários</h2><div class="muted">Habilidades com menor percentual de acerto entre os resultados corrigidos.</div><div id="dash-descriptors" style="margin-top:12px"></div></div>
   </div>
@@ -526,7 +527,7 @@ function saveLaunch(){
 }
 function closeModal(){document.getElementById("modal").classList.remove("open")}
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()}
-function renderAll(){populateSelects();initResultFilterEvents();renderHome();renderDashboard();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems();initReportFilters();renderReportPreview()}
+function renderAll(){populateSelects();initResultFilterEvents();renderHome();renderDashboard();renderProficiencyHierarchy();renderClasses();renderStudents();renderTests();renderQuestions();renderResults();renderEvolution();renderRanking();renderItems();initReportFilters();renderReportPreview()}
 renderAll();
 
 function showStudentDetail(studentId,simulado){
@@ -571,6 +572,27 @@ function showStudentDetail(studentId,simulado){
  box.classList.add("open");
  box.scrollIntoView({behavior:"smooth",block:"start"});
 }
+function renderProficiencyHierarchy(){
+ const box=document.getElementById("prof-hierarchy"); if(!box)return;
+ const subject=document.getElementById("prof-subject-dash")?.value||"Matemática";
+ const key=subject==="Matemática"?"math":"port";
+ const results=state.responses.map(r=>({r,s:findStudent(r.Aluno,r.Matrícula),c:calcRecord(r)})).filter(x=>x.s&&x.c&&x.c[key]?.proficiencia?.score!=null);
+ if(!results.length){box.innerHTML='<div class="empty">Ainda não há resultados corrigidos para esta disciplina.</div>';return}
+ const school=results.reduce((a,x)=>a+x.c[key].proficiencia.score,0)/results.length;
+ const classRows=classes.map(cl=>{
+   const arr=results.filter(x=>x.s.turma===cl); const avg=arr.length?arr.reduce((a,x)=>a+x.c[key].proficiencia.score,0)/arr.length:null;
+   return {cl,arr,avg};
+ }).filter(x=>x.arr.length);
+ let html=`<div class="grid metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:16px">
+   <div class="kpi-card"><div class="label">Proficiência da escola</div><div class="value">${profFmt(school)}</div><div class="muted">${subject}</div></div>
+   <div class="kpi-card"><div class="label">Maior proficiência de turma</div><div class="value">${classRows.length?profFmt(Math.max(...classRows.map(x=>x.avg))):"—"}</div><div class="muted">${classRows.length?"3ª "+classRows.slice().sort((a,b)=>b.avg-a.avg)[0].cl:"—"}</div></div>
+   <div class="kpi-card"><div class="label">Menor proficiência de turma</div><div class="value">${classRows.length?profFmt(Math.min(...classRows.map(x=>x.avg))):"—"}</div><div class="muted">${classRows.length?"3ª "+classRows.slice().sort((a,b)=>a.avg-b.avg)[0].cl:"—"}</div></div>
+ </div>`;
+ html+=`<div class="card" style="margin-bottom:14px"><h3 style="margin-top:0">Por turma</h3><div class="table-wrap"><table><thead><tr><th>Turma</th><th>Alunos com resultado</th><th>Proficiência ${esc(subject)}</th></tr></thead><tbody>${classRows.map(x=>`<tr><td><b>3ª ${esc(x.cl)}</b></td><td>${x.arr.length}</td><td><b>${profFmt(x.avg)}</b></td></tr>`).join("")}</tbody></table></div></div>`;
+ html+=`<div class="card"><h3 style="margin-top:0">Por aluno</h3><div class="table-wrap"><table><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Acertos</th><th>Proficiência ${esc(subject)}</th></tr></thead><tbody>${results.sort((a,b)=>b.c[key].proficiencia.score-a.c[key].proficiencia.score).map(x=>`<tr><td><b>${esc(x.s.nome_aluno)}</b><div class="muted">${esc(x.s.aluno_id)}</div></td><td>3ª ${esc(x.s.turma)}</td><td>${esc(x.r.Simulado)}</td><td>${x.c[key].correct}/26</td><td><b>${profFmt(x.c[key].proficiencia.score)}</b></td></tr>`).join("")}</tbody></table></div></div>`;
+ box.innerHTML=html;
+}
+
 function renderDashboard(){
  const active=state.students.filter(s=>s.ativo!==false);
  const results=state.responses.map(r=>({r,s:findStudent(r.Aluno,r.Matrícula),c:calcRecord(r)})).filter(x=>x.s&&x.c);
