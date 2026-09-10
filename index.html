@@ -296,13 +296,13 @@ body{background:var(--cream)}
       <div class="card import-card">
         <div class="import-icon">📊</div><h3>Planilhas</h3>
         <p>Importe <b>Excel (.xlsx/.xls)</b> ou <b>CSV</b>. O sistema reconhece automaticamente abas de alunos e tabelas com Q01–Q52.</p>
-        <label class="dropzone"><strong>Selecionar planilha</strong><span>Toque ou clique para escolher o arquivo</span><input id="import-sheet-file" type="file" accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden></label>
+        <div class="dropzone"><strong>Selecionar planilha</strong><span>Escolha o arquivo Excel ou CSV no dispositivo</span><button type="button" class="btn primary" style="margin-top:12px" onclick="document.getElementById('import-sheet-file').click()">📂 Escolher planilha</button><input id="import-sheet-file" type="file" accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden></div>
         <div class="muted" style="margin-top:10px">Para importar resultados completos, a planilha deve conter Matrícula/Aluno/Turma/Simulado e as colunas Q01 até Q52.</div>
       </div>
       <div class="card import-card">
         <div class="import-icon">📄</div><h3>Cartões em PDF</h3>
         <p>Importe um ou vários <b>PDFs dos cartões-resposta</b>. Cada página será tratada como uma folha e enviada para a correção automática.</p>
-        <label class="dropzone"><strong>Selecionar PDF</strong><span>É possível selecionar vários arquivos</span><input id="import-pdf-files" type="file" accept="application/pdf" multiple hidden></label>
+        <div class="dropzone"><strong>Selecionar PDF</strong><span>É possível selecionar vários arquivos</span><button type="button" class="btn primary" style="margin-top:12px" onclick="document.getElementById('import-pdf-files').click()">📂 Escolher PDF</button><input id="import-pdf-files" type="file" accept="application/pdf" multiple hidden></div>
         <div class="muted" style="margin-top:10px">Depois da seleção, o sistema abrirá a tela de correção para você conferir e salvar os resultados.</div>
       </div>
     </div>
