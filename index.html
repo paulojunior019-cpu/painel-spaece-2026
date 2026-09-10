@@ -161,6 +161,7 @@ body{background:var(--cream)}
 @media(max-width:1100px){.side{width:190px;min-width:190px}}
 @media(max-width:650px){.nav{flex-direction:row;overflow-x:auto;gap:3px}.nav button{width:auto;min-width:max-content;height:42px;padding:0 12px}.nav-icon{width:18px;min-width:18px;font-size:17px}.nav-settings{margin-top:0!important}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -183,7 +184,7 @@ body{background:var(--cream)}
     <symbol id="i-report" viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5zM15 3v5h5"/><path d="M8 16v-4M12 16v-7M16 16v-2"/></symbol>
     <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></symbol>
     <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="m4.9 15.5-1.4 1.4 3.6 3.6 1.4-1.4M19.1 15.5l1.4 1.4-3.6 3.6-1.4-1.4M8.5 4.9 7.1 3.5 3.5 7.1l1.4 1.4M15.5 4.9l1.4-1.4 3.6 3.6-1.4 1.4"/></symbol>
-  </svg>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 13v6h14v-6"/></symbol></svg>
   <nav class="nav" aria-label="Navegação principal">
     <button class="active" data-view="home"><svg class="nav-svg"><use href="#i-home"/></svg><span>Início</span></button>
     <button data-view="dashboard"><svg class="nav-svg"><use href="#i-chart"/></svg><span>Dashboard</span></button>
@@ -192,6 +193,7 @@ body{background:var(--cream)}
     <button data-view="simulados"><svg class="nav-svg"><use href="#i-file"/></svg><span>Simulados</span></button>
     <button data-view="lancar"><svg class="nav-svg"><use href="#i-edit"/></svg><span>Lançar resultado</span></button>
     <button data-view="correcao"><svg class="nav-svg"><use href="#i-check"/></svg><span>Correção automática</span></button>
+    <button data-view="importacao"><svg class="nav-svg"><use href="#i-upload"/></svg><span>Importar dados</span></button>
     <button data-view="resultados"><svg class="nav-svg"><use href="#i-bars"/></svg><span>Resultados</span></button>
     <button data-view="evolucao"><svg class="nav-svg"><use href="#i-trend"/></svg><span>Evolução</span></button>
     <button data-view="ranking"><svg class="nav-svg"><use href="#i-trophy"/></svg><span>Ranking</span></button>
@@ -285,6 +287,29 @@ body{background:var(--cream)}
       <div class="form-actions"><button id="scan-process" class="btn primary" onclick="processScanQueue()" disabled>Processar folhas</button></div>
     </div>
     <div id="scan-results" class="scan-results"></div>
+  </div>
+
+
+  <div id="view-importacao" class="view">
+    <div class="top"><div><div class="eyebrow">Dados</div><div class="title">Importar dados</div><p class="subtitle">Adicione alunos e resultados por planilha ou importe cartões-resposta em PDF.</p></div></div>
+    <div class="import-grid">
+      <div class="card import-card">
+        <div class="import-icon">📊</div><h3>Planilhas</h3>
+        <p>Importe <b>Excel (.xlsx/.xls)</b> ou <b>CSV</b>. O sistema reconhece automaticamente abas de alunos e tabelas com Q01–Q52.</p>
+        <label class="dropzone"><strong>Selecionar planilha</strong><span>Toque ou clique para escolher o arquivo</span><input id="import-sheet-file" type="file" accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden></label>
+        <div class="muted" style="margin-top:10px">Para importar resultados completos, a planilha deve conter Matrícula/Aluno/Turma/Simulado e as colunas Q01 até Q52.</div>
+      </div>
+      <div class="card import-card">
+        <div class="import-icon">📄</div><h3>Cartões em PDF</h3>
+        <p>Importe um ou vários <b>PDFs dos cartões-resposta</b>. Cada página será tratada como uma folha e enviada para a correção automática.</p>
+        <label class="dropzone"><strong>Selecionar PDF</strong><span>É possível selecionar vários arquivos</span><input id="import-pdf-files" type="file" accept="application/pdf" multiple hidden></label>
+        <div class="muted" style="margin-top:10px">Depois da seleção, o sistema abrirá a tela de correção para você conferir e salvar os resultados.</div>
+      </div>
+    </div>
+    <div class="card import-card">
+      <h3>Resumo da importação</h3><p id="import-status-text">Nenhuma importação realizada nesta sessão.</p>
+      <div id="import-summary"></div><div id="import-log" class="import-log"></div>
+    </div>
   </div>
 
   <div id="view-resultados" class="view">
@@ -445,7 +470,21 @@ function showSettings(){
  alert('Configurações do PAINEL SPAECE 2026\n\nOs dados atuais são armazenados neste navegador.');
 }
 
-function showView(v,sourceBtn=null){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));const target=document.getElementById("view-"+v);if(!target)return;target.classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));const activeBtn=sourceBtn||document.querySelector(`.nav button[data-view="${v}"]`);if(activeBtn)activeBtn.classList.add("active");renderAll();if(sourceBtn?.dataset.anchor==="descritor"){setTimeout(()=>document.querySelector("#dash-descriptors")?.scrollIntoView({behavior:"smooth",block:"start"}),80);}}
+function showView(v,sourceBtn=null){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));const target=document.getElementById("view-"+v);if(!target)return;target.classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));const activeBtn=sourceBtn||document.querySelector(`.nav button[data-view="${v}"]`);if(activeBtn)activeBtn.classList.add("active");
+/* Importação de planilhas e PDF */
+function importLog(lines){const el=document.getElementById("import-log");if(el)el.innerHTML=lines.map(x=>`<div>${x}</div>`).join("")}
+function updateImportSummary(stats){const el=document.getElementById("import-summary");if(!el)return;el.innerHTML=`<div class="import-summary"><div class="import-stat"><span>Alunos novos</span><b>${stats.studentsNew||0}</b></div><div class="import-stat"><span>Alunos atualizados</span><b>${stats.studentsUpdated||0}</b></div><div class="import-stat"><span>Resultados</span><b>${stats.responses||0}</b></div><div class="import-stat"><span>Ignorados</span><b>${stats.skipped||0}</b></div></div>`}
+function normHeader(v){return String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"")}
+function rowToObject(headers,row){const o={};headers.forEach((h,i)=>o[String(h??"").trim()]=row[i]??"");return o}
+function findCol(obj,names){const entries=Object.keys(obj);const wanted=names.map(normHeader);return entries.find(k=>wanted.includes(normHeader(k)))||null}
+function normalizeTurma(v){return String(v??"").trim().toUpperCase().replace(/^3[A-Zªº\s-]*/i,"").replace(/[^A-F]/g,"").slice(0,1)}
+function normalizeAnswer(v){const a=String(v??"").trim().toUpperCase();return /^[ABCDE]$/.test(a)?a:""}
+function importStudentRow(obj,stats){const id=String(obj[findCol(obj,["Matrícula","Matricula","ID_Aluno","ID Aluno","RA"])||""]??"").trim();const name=String(obj[findCol(obj,["Aluno","Nome_Aluno","Nome Aluno","Nome"])||""]??"").trim();const turma=normalizeTurma(obj[findCol(obj,["Turma","Classe"])||""]??"");if(!id||!name||!turma)return false;const serie=String(obj[findCol(obj,["Serie","Série"])||""]??"3ª")||"3ª";const found=state.students.find(s=>String(s.aluno_id)===id);if(found){found.nome_aluno=name;found.turma=turma;found.serie=serie;found.ativo=true;stats.studentsUpdated++;}else{state.students.push({aluno_id:id,nome_aluno:name,turma,serie,ativo:true});stats.studentsNew++;}return true}
+function importResponseRow(obj,stats,defaultTest){const idCol=findCol(obj,["Matrícula","Matricula","ID_Aluno","ID Aluno","RA"]), nameCol=findCol(obj,["Aluno","Nome_Aluno","Nome Aluno","Nome"]), classCol=findCol(obj,["Turma","Classe"]), testCol=findCol(obj,["Simulado","Teste"]);const id=String(idCol?obj[idCol]:"").trim(),name=String(nameCol?obj[nameCol]:"").trim(),turma=normalizeTurma(classCol?obj[classCol]:"");const qCols=Object.keys(obj).filter(k=>/^Q0?[1-9]$|^Q[1-4][0-9]$|^Q5[0-2]$/i.test(String(k).trim()));if(qCols.length<20)return false;let student=state.students.find(s=>id&&String(s.aluno_id)===id)||state.students.find(s=>name&&normText(s.nome_aluno)===normText(name));if(!student&&id&&name&&turma){student={aluno_id:id,nome_aluno:name,turma,serie:"3ª",ativo:true};state.students.push(student);stats.studentsNew++;}if(!student){stats.skipped++;return false}const sim=String(testCol?obj[testCol]:defaultTest||"1").replace(/\D/g,"")||"1";const rec={Matrícula:String(student.aluno_id),Aluno:student.nome_aluno,Turma:student.turma,Simulado:"Simulado "+sim,Fonte:"Importação de planilha",Data:new Date().toISOString()};for(let q=1;q<=52;q++){const key=Object.keys(obj).find(k=>normHeader(k)===normHeader("Q"+String(q).padStart(2,"0")))||Object.keys(obj).find(k=>normHeader(k)===normHeader("Q"+q));rec["Q"+String(q).padStart(2,"0")]=normalizeAnswer(key?obj[key]:"")}state.responses=state.responses.filter(r=>!(String(r.Matrícula)===String(rec.Matrícula)&&String(r.Simulado)===String(rec.Simulado)));state.responses.push(rec);stats.responses++;return true}
+async function handleSpreadsheetImport(file){const status=document.getElementById("import-status-text");status.textContent="Lendo planilha...";const stats={studentsNew:0,studentsUpdated:0,responses:0,skipped:0},logs=[];try{let wb;if(file.name.toLowerCase().endsWith(".csv")){const text=await file.text();wb=XLSX.read(text,{type:"string",raw:true,FS:text.includes(";")?";":","});}else{const data=await file.arrayBuffer();wb=XLSX.read(data,{type:"array",cellDates:true});}for(const name of wb.SheetNames){const ws=wb.Sheets[name],rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});if(!rows.length)continue;const headers=rows[0].map(x=>String(x??"").trim());const objs=rows.slice(1).filter(r=>r.some(v=>String(v??"").trim()!=="")).map(r=>rowToObject(headers,r));const lower=normHeader(name);const hasQ=headers.filter(h=>/^Q0?[1-9]$|^Q[1-4][0-9]$|^Q5[0-2]$/i.test(h)).length>=20;let count=0;if(/^ALUNOS_[A-F]$/.test(lower)){objs.forEach(o=>{if(importStudentRow(o,stats))count++});logs.push(`✓ ${name}: ${count} aluno(s) lido(s).`);}else if(hasQ){objs.forEach(o=>{if(importResponseRow(o,stats,"1"))count++});logs.push(`✓ ${name}: ${count} resultado(s) importado(s).`);}else if(lower.includes("LANCAMENTO")||lower.includes("RESUMO")||lower.includes("CONSOLIDADO")){logs.push(`• ${name}: ignorada para resultados, pois não contém Q01–Q52.`);}else{let added=0;objs.forEach(o=>{if(importStudentRow(o,stats))added++});if(added)logs.push(`✓ ${name}: ${added} aluno(s) reconhecido(s).`);}}persist();renderAll();updateImportSummary(stats);status.textContent=`Importação concluída: ${stats.studentsNew+stats.studentsUpdated} aluno(s) processado(s) e ${stats.responses} resultado(s).`;if(stats.skipped)logs.push(`⚠ ${stats.skipped} linha(s) não puderam ser vinculadas a um aluno.`);importLog(logs);toast("Importação concluída");}catch(e){console.error(e);status.textContent="Não foi possível ler a planilha.";importLog([`✕ Erro: ${esc(e.message||e)}`]);toast("Erro na importação")}}
+document.getElementById("import-sheet-file")?.addEventListener("change",e=>{const f=e.target.files?.[0];if(f)handleSpreadsheetImport(f);e.target.value=""});document.getElementById("import-pdf-files")?.addEventListener("change",e=>{const fs=e.target.files;if(fs&&fs.length){addScanFiles(fs);showView("correcao");toast(`${fs.length} PDF(s) enviados para correção automática`);}e.target.value=""});
+
+renderAll();if(sourceBtn?.dataset.anchor==="descritor"){setTimeout(()=>document.querySelector("#dash-descriptors")?.scrollIntoView({behavior:"smooth",block:"start"}),80);}}
 document.querySelectorAll(".nav button[data-view]").forEach(b=>b.onclick=()=>showView(b.dataset.view,b));
 function populateSelects(){
  const opts=classes.map(c=>`<option value="${c}">3ª ${c}</option>`).join("");
