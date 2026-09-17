@@ -199,6 +199,85 @@ body.readonly-user .nav button[data-view="importacao"],
 body.readonly-user .nav button[data-view="itens"]{display:none!important}
 @media(max-width:650px){.auth-box{padding:20px}.auth-switch .btn{min-width:100%}}
 </style>
+
+<style id="theme-and-dashboard-v9">
+/* ===== DASHBOARD V9: gráficos + tema escuro ===== */
+:root{
+ --bg-main:#f6f3e9; --bg-card:#fffefa; --bg-soft:#f5f8f6; --text-main:#193428;
+ --text-muted:#68766d; --line-soft:#ded7c4; --grid-line:#e7ece9;
+}
+body.dark-mode{
+ --cream:#0b1512; --paper:#101c18; --bg-main:#0b1512; --bg-card:#101c18; --bg-soft:#14221d;
+ --ink:#e6eee9; --text-main:#e6eee9; --text-muted:#9fb0a8; --line-soft:#294038; --grid-line:#263a33;
+ background:#0b1512!important;color:#e6eee9!important;
+}
+body.dark-mode .main{background:#0b1512}
+body.dark-mode .global-header{background:rgba(11,21,18,.94);border-color:#294038}
+body.dark-mode .global-title,body.dark-mode .title,body.dark-mode .section h2,body.dark-mode .card h2,body.dark-mode .dashboard-panel-title h2{color:#dff5e9}
+body.dark-mode .global-subtitle,body.dark-mode .subtitle,body.dark-mode .muted,body.dark-mode .dashboard-modern-subtitle{color:#9fb0a8}
+body.dark-mode .card,body.dark-mode .kpi-card,body.dark-mode .dashboard-modern-panel,body.dark-mode .modal-box{background:#101c18;border-color:#294038;box-shadow:0 8px 28px rgba(0,0,0,.24)}
+body.dark-mode .input,body.dark-mode .select{background:#14221d;color:#e6eee9;border-color:#385148}
+body.dark-mode th{background:#162720;color:#aebeb7;border-color:#294038}
+body.dark-mode td{border-color:#22372f}
+body.dark-mode tr:hover{background:#14231e}
+body.dark-mode .bar,.dark-mode .mini-bar,.dark-mode .nota-mini-bar{background:#263a33}
+body.dark-mode .rank-row{background:#14231e}
+body.dark-mode .q,body.dark-mode .opt{background:#14221d;color:#e6eee9;border-color:#385148}
+body.dark-mode .scan-thumb,body.dark-mode .scan-result{background:#14221d;border-color:#385148}
+body.dark-mode .subject-card-modern{border-color:#294038}
+body.dark-mode .subject-card-modern.math{background:linear-gradient(135deg,#102c21,#101c18)}
+body.dark-mode .subject-card-modern.port{background:linear-gradient(135deg,#10243a,#101c18)}
+body.dark-mode .class-chart-modern{background:repeating-linear-gradient(to bottom,transparent 0,transparent 49px,#243831 50px)}
+body.dark-mode .class-val,body.dark-mode .class-label,body.dark-mode .subject-name-modern,body.dark-mode .subject-prof-modern strong{color:#dcebe4}
+body.dark-mode .subject-progress-modern{background:#263a33}
+body.dark-mode .dashboard-icon{background:#173027;color:#7fe1b3}
+body.dark-mode .nota-table{background:#101c18}
+body.dark-mode .nota-table th{background:#162720}
+body.dark-mode .nota-ring{background:#14221d;border-color:#315148;color:#a7edca}
+body.dark-mode .nota-faixa{background:#1a2b25;color:#b9c8c1}
+body.dark-mode .notice{background:#2c2818;border-color:#665725;color:#ead68a}
+
+.theme-toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-soft);background:var(--bg-card);color:var(--text-main);padding:9px 12px;border-radius:11px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.04)}
+.theme-toggle:hover{transform:translateY(-1px)}
+.theme-toggle-icon{font-size:16px;line-height:1}
+
+/* gráfico por turma */
+.class-chart-modern{height:285px!important;display:flex!important;align-items:stretch!important;gap:10px!important;position:relative!important;padding:28px 10px 30px 48px!important;background:repeating-linear-gradient(to bottom,transparent 0,transparent 55px,#e7ece9 56px)!important;border-radius:12px}
+.class-chart-modern:before{content:""!important;position:absolute;left:0;top:0;bottom:30px;width:42px;background:linear-gradient(to bottom,transparent 0%,transparent 99%);}
+.class-axis{position:absolute;left:0;top:20px;bottom:31px;width:38px;display:flex;flex-direction:column;justify-content:space-between;text-align:right;color:#89968f;font-size:9px;font-weight:700}
+.class-columns{height:100%;display:flex;align-items:stretch;justify-content:space-around;gap:10px;flex:1}
+.class-col{height:100%!important;flex:1!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-end!important;min-width:38px!important;position:relative}
+.class-value{font-size:12px!important;font-weight:900!important;color:#17463a!important;margin-bottom:6px!important}
+.class-bar{width:min(48px,76%)!important;min-height:4px!important;border-radius:9px 9px 3px 3px!important;box-shadow:0 5px 12px rgba(0,0,0,.08)!important;transition:height .5s ease,transform .2s ease!important}
+.class-bar:hover{transform:translateY(-3px)}
+.class-label{font-size:11px!important;font-weight:900!important;color:#52625a!important;margin-top:8px!important}
+
+/* cards de disciplina */
+.subject-cards-modern{display:grid!important;grid-template-columns:1fr!important;gap:13px!important}
+.subject-card-modern{min-height:118px;position:relative;overflow:hidden}
+.subject-card-modern:after{content:"";position:absolute;right:-35px;bottom:-50px;width:130px;height:130px;border-radius:50%;border:1px solid rgba(11,120,88,.08)}
+.subject-progress-modern{height:10px!important}
+
+@media(max-width:1000px){
+ .class-chart-modern{height:260px!important}
+ .class-bar{width:min(44px,72%)!important}
+}
+@media(max-width:650px){
+ .theme-toggle span:last-child{display:none}
+ .theme-toggle{padding:9px 10px}
+ .class-chart-modern{height:240px!important;padding-left:38px!important;gap:4px!important}
+ .class-axis{width:32px;font-size:8px}
+ .class-columns{gap:4px}
+ .class-col{min-width:30px!important}
+ .class-bar{width:28px!important}
+ .class-value{font-size:9px!important}
+ .class-label{font-size:9px!important}
+}
+</style>
+
+<style id="class-color-aliases">
+.class-bar.ca{background:#35b779}.class-bar.cb{background:#4285e8}.class-bar.cc{background:#f0ad36}.class-bar.cd{background:#9564dc}.class-bar.ce{background:#e46d6d}.class-bar.cf{background:#38b5ba}
+</style>
 </head>
 <body>
 
@@ -273,6 +352,7 @@ body.readonly-user .nav button[data-view="itens"]{display:none!important}
 <div id="readonly-note" class="readonly-note" style="display:none"></div>
 <div class="global-header">
   <div><div class="global-title">PAINEL SPAECE 2026</div><div class="global-subtitle">E.E.M. FREI POLICARPO &nbsp; | &nbsp; 3ª série · Ensino Médio &nbsp; | &nbsp; Canindé – CE</div></div>
+  <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro"><span class="theme-toggle-icon" id="theme-icon">☾</span><span id="theme-label">Modo escuro</span></button>
   <div class="global-year"><span class="year-icon">▣</span><div><small>Ano Letivo</small><b>2026</b></div></div>
 </div>
   <div id="view-home" class="view active">
@@ -931,14 +1011,37 @@ function renderDashboard(){
  el("dash-average").textContent=results.length?pct(results.reduce((a,x)=>a+x.c.percent,0)/results.length):"—";
  el("dash-proficiency").textContent=results.length?profFmt(results.reduce((a,x)=>a+(x.c.proficiencia||0),0)/results.length):"—";
  el("dash-correct").textContent=results.length?(results.reduce((a,x)=>a+x.c.correct,0)/results.length).toFixed(1)+"/52":"—";
- el("dash-classes").innerHTML=classes.map(cl=>{
-   const a=results.filter(x=>x.s.turma===cl),avg=a.length?a.reduce((n,x)=>n+x.c.percent,0)/a.length:null;
-   return `<div class="mini-row"><b>3ª ${cl}</b><div class="mini-bar"><span style="width:${avg?avg*100:0}%"></span></div><b>${pct(avg)}</b></div>`;
- }).join("");
- el("dash-subjects").innerHTML=[["Matemática","math"],["Português","port"]].map(([l,k])=>{
-   const avg=results.length?results.reduce((n,x)=>n+x.c[k].percent,0)/results.length:null;
-   return `<div class="mini-row"><b>${l}</b><div class="mini-bar"><span style="width:${avg?avg*100:0}%"></span></div><b>${pct(avg)}</b></div>`;
- }).join("");
+
+ // ===== Desempenho por turma: gráfico de colunas =====
+ const classBox=el("dash-classes");
+ const classStats=classes.map(cl=>{
+   const a=results.filter(x=>x.s.turma===cl);
+   return {cl, n:a.length, avg:a.length?a.reduce((n,x)=>n+x.c.percent,0)/a.length:null};
+ });
+ classBox.innerHTML=`<div class="class-axis"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div><div class="class-columns">${classStats.map(({cl,avg,n})=>{
+   const value=avg==null?0:Math.max(0,Math.min(100,avg*100));
+   const key=String(cl).toLowerCase();
+   return `<div class="class-col" title="3ª ${esc(cl)} — ${n} resultado(s)">
+      <div class="class-value">${avg==null?'—':value.toFixed(1)+'%'}</div>
+      <div class="class-bar c${esc(cl.toLowerCase())}" style="height:${value}%"></div>
+      <div class="class-label">3ª ${esc(cl)}</div>
+    </div>`;
+ }).join('')}</div>`;
+
+ // ===== Desempenho por disciplina: cards =====
+ const subjectBox=el("dash-subjects");
+ subjectBox.innerHTML=[['Matemática','math','∑'],['Português','port','Aa']].map(([label,key,icon])=>{
+   const avg=results.length?results.reduce((n,x)=>n+x.c[key].percent,0)/results.length:null;
+   const prof=results.length?results.reduce((n,x)=>n+(x.c[key].proficiencia?.score||0),0)/results.length:null;
+   const value=avg==null?0:Math.max(0,Math.min(100,avg*100));
+   const total=results.length?results.reduce((n,x)=>n+x.c[key].correct,0):0;
+   return `<div class="subject-card-modern ${key}">
+      <div class="subject-top-modern"><div class="subject-icon-modern">${icon}</div><div><div class="subject-name-modern">${label}</div><div class="subject-percent-modern">${avg==null?'—':value.toFixed(1)+'%'}</div><div class="subject-description-modern">${total} acertos registrados · média de 26 questões</div></div></div>
+      <div class="subject-progress-modern"><span style="width:${value}%"></span></div>
+      <div class="subject-prof-modern"><small>Proficiência estimada</small><strong>${prof==null?'—':profFmt(prof)}</strong></div>
+    </div>`;
+ }).join('');
+
  const stats=Array.from({length:52},(_,i)=>({q:i+1,ok:0,n:0}));
  results.forEach(x=>answersOf(x.r).forEach((a,i)=>{if(a&&a!=="NR"){stats[i].n++;if(a===getKey("1",i+1))stats[i].ok++}}));
  el("dash-items").innerHTML=stats.filter(x=>x.n).sort((a,b)=>a.ok/a.n-b.ok/b.n).slice(0,8).map(x=>{
@@ -950,6 +1053,22 @@ function renderDashboard(){
  }).join("");
  renderDashboardDescriptors(results);
 }
+
+function applyTheme(theme){
+ const dark=theme==='dark';
+ document.body.classList.toggle('dark-mode',dark);
+ const icon=document.getElementById('theme-icon');
+ const label=document.getElementById('theme-label');
+ if(icon)icon.textContent=dark?'☀':'☾';
+ if(label)label.textContent=dark?'Modo claro':'Modo escuro';
+ try{localStorage.setItem('painel_spaece_theme',dark?'dark':'light')}catch(e){}
+}
+function toggleTheme(){
+ applyTheme(document.body.classList.contains('dark-mode')?'light':'dark');
+}
+(function(){
+ try{applyTheme(localStorage.getItem('painel_spaece_theme')||'light')}catch(e){applyTheme('light')}
+})();
 
 function renderDashboardDescriptors(results){
  const box=document.getElementById("dash-descriptors"); if(!box)return;
